@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель — WebCraft Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/index.css">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        
+        body {
+            background: #0a0a0f;
+            color: #e0e0e0;
+        }
+
+        .glass-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .order-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .order-card:hover {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(108, 92, 231, 0.3);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            appearance: none;
+            background: transparent;
+        }
+
+        .status-new {
+            background: rgba(108, 92, 231, 0.2);
+            color: #a78bfa;
+            border: 1px solid rgba(108, 92, 231, 0.3);
+        }
+
+        .status-in-progress {
+            background: rgba(237, 137, 54, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(237, 137, 54, 0.3);
+        }
+
+        .status-completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(108,92,231,0.1), rgba(0,206,201,0.1));
+            border: 1px solid rgba(108,92,231,0.2);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6C5CE7, #00CEC9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        input[type="password"] {
+            background: rgba(30, 30, 40, 0.6);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: white;
+            font-size: 15px;
+            width: 100%;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="password"]:focus {
+            border-color: #6C5CE7;
+            box-shadow: 0 0 20px rgba(108, 92, 231, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6C5CE7, #a855f7);
+            border: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .hidden-section {
+            display: none;
+        }
+
+        .order-detail {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .order-detail-item {
+            background: rgba(255,255,255,0.02);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .order-detail-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .order-detail-value {
+            font-size: 14px;
+            color: #e5e7eb;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="login-container">
+        <div class="glass-card p-10 max-w-md w-full mx-6">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center font-bold text-white text-2xl mx-auto mb-4">W</div>
+                <h1 class="text-2xl font-bold text-white mb-2">Админ-панель</h1>
+                <p class="text-gray-400">WebCraft Studio</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Пароль</label>
+                    <input type="password" id="passwordInput" placeholder="Введите пароль" required>
+                </div>
+                <button type="submit" class="btn-primary w-full">Войти</button>
+                <p id="errorMsg" class="text-red-400 text-sm text-center hidden">Неверный пароль</p>
+            </form>
+            
+            <div class="mt-6 pt-6 border-t border-white/5">
+                <p class="text-xs text-gray-500 text-center">
+                    Пароль: admin2026
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminSection" class="hidden-section min-h-screen">
+        <!-- Header -->
+        <header class="border-b border-white/5 bg-black/20 backdrop-blur-xl sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center font-bold text-white text-lg">W</div>
+                    <div>
+                        <h1 class="font-bold text-white">Админ-панель</h1>
+                        <p class="text-xs text-gray-400">WebCraft Studio</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="exportOrders()" class="btn-secondary">
+                        📥 Экспорт CSV
+                    </button>
+                    <button onclick="logout()" class="btn-secondary">
+                        🚪 Выйти
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-6 py-8">
+            <!-- Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalOrders">0</div>
+                    <div class="text-sm text-gray-400 mt-2">Всего заявок</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="newOrders">0</div>
+                    <div class="text-sm text-gray-400 mt-2">Новых</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="inProgressOrders">0</div>
+                    <div class="text-sm text-gray-400 mt-2">В работе</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedOrders">0</div>
+                    <div class="text-sm text-gray-400 mt-2">Завершено</div>
+                </div>
+            </div>
+
+            <!-- Orders List -->
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-white mb-4">Заявки</h2>
+                <div id="ordersContainer">
+                    <div class="glass-card p-12 text-center">
+                        <div class="text-6xl mb-4">📭</div>
+                        <h3 class="text-lg font-bold text-white mb-2">Пока нет заявок</h3>
+                        <p class="text-gray-400">Заявки появятся здесь после отправки формы на сайте</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = 'admin2026';
+        
+        if (localStorage.getItem('adminLoggedIn') === 'true') {
+            showAdminPanel();
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('passwordInput').value;
+            
+            if (password === ADMIN_PASSWORD) {
+                localStorage.setItem('adminLoggedIn', 'true');
+                showAdminPanel();
+            } else {
+                document.getElementById('errorMsg').classList.remove('hidden');
+            }
+        });
+
+        function showAdminPanel() {
+            document.getElementById('loginSection').classList.add('hidden-section');
+            document.getElementById('adminSection').classList.remove('hidden-section');
+            loadOrders();
+        }
+
+        function logout() {
+            localStorage.removeItem('adminLoggedIn');
+            location.reload();
+        }
+
+        function loadOrders() {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            displayOrders(orders);
+            updateStats(orders);
+        }
+
+        function displayOrders(orders) {
+            const container = document.getElementById('ordersContainer');
+            
+            if (orders.length === 0) {
+                container.innerHTML = `
+                    <div class="glass-card p-12 text-center">
+                        <div class="text-6xl mb-4">📭</div>
+                        <h3 class="text-lg font-bold text-white mb-2">Пока нет заявок</h3>
+                        <p class="text-gray-400">Заявки появятся здесь после отправки формы на сайте</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = orders.map((order, index) => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <h3 class="font-bold text-white text-lg">${order.name || 'Аноним'}</h3>
+                            <p class="text-sm text-gray-400">${new Date(order.date).toLocaleString('ru-RU')}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <select onchange="changeStatus(${index}, this.value)" 
+                                class="${getStatusClass(order.status)}">
+                                <option value="new" ${order.status === 'new' ? 'selected' : ''}>Новая</option>
+                                <option value="in-progress" ${order.status === 'in-progress' ? 'selected' : ''}>В работе</option>
+                                <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Завершена</option>
+                            </select>
+                            <button onclick="deleteOrder(${index})" class="btn-secondary text-red-400 hover:text-red-300">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                    <div class="order-detail">
+                        <div class="order-detail-item">
+                            <div class="order-detail-label">📞 Телефон</div>
+                            <div class="order-detail-value">${order.phone || 'Не указан'}</div>
+                        </div>
+                        <div class="order-detail-item">
+                            <div class="order-detail-label">📧 Email</div>
+                            <div class="order-detail-value">${order.email || 'Не указан'}</div>
+                        </div>
+                        <div class="order-detail-item">
+                            <div class="order-detail-label">🌐 Тип сайта</div>
+                            <div class="order-detail-value">${order.site_type || 'Не указан'}</div>
+                        </div>
+                        <div class="order-detail-item">
+                            <div class="order-detail-label"> Бюджет</div>
+                            <div class="order-detail-value">${order.budget || 'Не указан'}</div>
+                        </div>
+                    </div>
+                    ${order.message ? `
+                        <div class="mt-4 pt-4 border-t border-white/5">
+                            <div class="order-detail-label">📝 Сообщение</div>
+                            <div class="order-detail-value" style="margin-top: 8px;">${order.message}</div>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getStatusClass(status) {
+            const classes = {
+                'new': 'status-badge status-new',
+                'in-progress': 'status-badge status-in-progress',
+                'completed': 'status-badge status-completed'
+            };
+            return classes[status] || 'status-badge status-new';
+        }
+
+        function updateStats(orders) {
+            const total = orders.length;
+            const newCount = orders.filter(o => o.status === 'new').length;
+            const inProgressCount = orders.filter(o => o.status === 'in-progress').length;
+            const completedCount = orders.filter(o => o.status === 'completed').length;
+
+            document.getElementById('totalOrders').textContent = total;
+            document.getElementById('newOrders').textContent = newCount;
+            document.getElementById('inProgressOrders').textContent = inProgressCount;
+            document.getElementById('completedOrders').textContent = completedCount;
+        }
+
+        function changeStatus(index, newStatus) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            if (orders[index]) {
+                orders[index].status = newStatus;
+                localStorage.setItem('orders', JSON.stringify(orders));
+                loadOrders();
+            }
+        }
+
+        function deleteOrder(index) {
+            if (confirm('Удалить эту заявку?')) {
+                const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+                orders.splice(index, 1);
+                localStorage.setItem('orders', JSON.stringify(orders));
+                loadOrders();
+            }
+        }
+
+        function exportOrders() {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const csv = convertToCSV(orders);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        function convertToCSV(orders) {
+            const headers = ['Дата', 'Имя', 'Телефон', 'Email', 'Тип сайта', 'Бюджет', 'Сообщение', 'Статус'];
+            const rows = orders.map(order => [
+                order.date,
+                order.name,
+                order.phone,
+                order.email,
+                order.site_type,
+                order.budget,
+                order.message,
+                order.status
+            ]);
+            
+            return [headers, ...rows]
+                .map(row => row.map(cell => `"${cell || ''}"`).join(','))
+                .join('\n');
+        }
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'orders' && localStorage.getItem('adminLoggedIn') === 'true') {
+                loadOrders();
+            }
+        });
+
+        setInterval(() => {
+            if (localStorage.getItem('adminLoggedIn') === 'true') {
+                loadOrders();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
