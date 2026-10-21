@@ -1,443 +1,2045 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ-панель — WebCraft Studio</title>
+    <title>Гильдия Игр — Прокат настольных игр и услуги ведущего</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/index.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Cinzel', 'serif'],
+                    },
+                    colors: {
+                        guild: {
+                            950: '#090b10',
+                            900: '#0f131d',
+                            800: '#181e2c',
+                            700: '#262f45',
+                            accent: '#d97706',
+                            gold: '#f59e0b',
+                            light: '#fbbf24'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        
         body {
-            background: #0a0a0f;
-            color: #e0e0e0;
+            background-color: #090b10;
+            color: #e2e8f0;
+            overflow-x: hidden;
         }
-
-        .glass-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-
-        .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        ::-webkit-scrollbar-track {
+            background: #090b10;
         }
-
-        .order-card {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 16px;
-            transition: all 0.3s ease;
+        ::-webkit-scrollbar-thumb {
+            background: #262f45;
+            border-radius: 4px;
         }
-
-        .order-card:hover {
-            background: rgba(255,255,255,0.04);
-            border-color: rgba(108, 92, 231, 0.3);
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d97706;
         }
-
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+        .surface-card {
+            background: rgba(24, 30, 44, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
         }
-
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            outline: none;
-            appearance: none;
-            background: transparent;
+        .surface-card:hover {
+            border-color: rgba(245, 158, 11, 0.35);
         }
-
-        .status-new {
-            background: rgba(108, 92, 231, 0.2);
-            color: #a78bfa;
-            border: 1px solid rgba(108, 92, 231, 0.3);
-        }
-
-        .status-in-progress {
-            background: rgba(237, 137, 54, 0.2);
-            color: #fbbf24;
-            border: 1px solid rgba(237, 137, 54, 0.3);
-        }
-
-        .status-completed {
-            background: rgba(34, 197, 94, 0.2);
-            color: #4ade80;
-            border: 1px solid rgba(34, 197, 94, 0.3);
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, rgba(108,92,231,0.1), rgba(0,206,201,0.1));
-            border: 1px solid rgba(108,92,231,0.2);
-            border-radius: 16px;
-            padding: 24px;
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 48px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #6C5CE7, #00CEC9);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        input[type="password"] {
-            background: rgba(30, 30, 40, 0.6);
-            border: 1px solid rgba(108, 92, 231, 0.2);
-            border-radius: 12px;
-            padding: 14px 18px;
-            color: white;
-            font-size: 15px;
-            width: 100%;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        input[type="password"]:focus {
-            border-color: #6C5CE7;
-            box-shadow: 0 0 20px rgba(108, 92, 231, 0.2);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #6C5CE7, #a855f7);
-            border: none;
-            padding: 14px 32px;
-            border-radius: 12px;
-            color: white;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(108, 92, 231, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px 16px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.2);
-        }
-
-        .hidden-section {
-            display: none;
-        }
-
-        .order-detail {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .order-detail-item {
-            background: rgba(255,255,255,0.02);
-            padding: 12px;
-            border-radius: 8px;
-        }
-
-        .order-detail-label {
-            font-size: 12px;
-            color: #6b7280;
-            margin-bottom: 4px;
-        }
-
-        .order-detail-value {
-            font-size: 14px;
-            color: #e5e7eb;
-            font-weight: 500;
+        .nav-glass {
+            background: rgba(9, 11, 16, 0.9);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
     </style>
 </head>
-<body>
-    <!-- Login Section -->
-    <div id="loginSection" class="login-container">
-        <div class="glass-card p-10 max-w-md w-full mx-6">
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center font-bold text-white text-2xl mx-auto mb-4">W</div>
-                <h1 class="text-2xl font-bold text-white mb-2">Админ-панель</h1>
-                <p class="text-gray-400">WebCraft Studio</p>
-            </div>
-            
-            <form id="loginForm" class="space-y-6">
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Пароль</label>
-                    <input type="password" id="passwordInput" placeholder="Введите пароль" required>
+<body class="antialiased selection:bg-amber-500 selection:text-slate-950">
+
+    <!-- Контейнер уведомлений -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- Шапка сайта -->
+    <header class="fixed top-0 left-0 right-0 z-50 nav-glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Логотип (5 быстрых кликов также открывают вход владельца) -->
+            <div id="brand-logo-trigger" class="flex items-center gap-3.5 cursor-pointer select-none group">
+                <div class="w-11 h-11 rounded-lg bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/10 group-hover:from-amber-400 group-hover:to-amber-600 transition-all">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
                 </div>
-                <button type="submit" class="btn-primary w-full">Войти</button>
-                <p id="errorMsg" class="text-red-400 text-sm text-center hidden">Неверный пароль</p>
-            </form>
-            
-            <div class="mt-6 pt-6 border-t border-white/5">
-                <p class="text-xs text-gray-500 text-center">
-                    Пароль: admin2026
+                <div>
+                    <span class="font-display text-xl sm:text-2xl font-bold tracking-wider text-white block leading-none">ГИЛЬДИЯ ИГР</span>
+                    <span class="text-[11px] text-slate-400 font-medium tracking-widest uppercase block mt-1">Прокат и организация партий</span>
+                </div>
+            </div>
+
+            <!-- Навигация -->
+            <nav class="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-300">
+                <a href="#catalog" class="hover:text-amber-400 transition-colors">Каталог игр</a>
+                <a href="#services" class="hover:text-amber-400 transition-colors">Ведущий и Друг на игру</a>
+                <a href="#printing" class="hover:text-amber-400 transition-colors">3D-печать на заказ</a>
+                <a href="#delivery" class="hover:text-amber-400 transition-colors">Доставка и правила</a>
+                <button onclick="openLegalModal()" class="hover:text-amber-400 transition-colors text-amber-400/90 font-semibold">
+                    Договор оферты
+                </button>
+            </nav>
+
+            <!-- Кнопка заказа / корзины -->
+            <div class="flex items-center gap-3">
+                <div id="owner-status-indicator" class="hidden items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold cursor-pointer" onclick="openAdminModal()">
+                    <span>Режим владельца</span>
+                </div>
+
+                <button onclick="openCartModal()" class="px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm transition-all flex items-center gap-3 shadow-lg shadow-amber-500/15">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    <span>Оформить заказ</span>
+                    <span id="cart-badge" class="px-2 py-0.5 text-xs rounded bg-slate-950 text-amber-400 font-extrabold">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Главный экран -->
+    <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-28 border-b border-slate-800/80 overflow-hidden">
+        <div class="absolute top-1/4 left-1/3 w-96 h-96 bg-amber-600/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-md bg-slate-800/90 border border-slate-700 text-amber-400 text-xs font-semibold uppercase tracking-wider">
+                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                        Официальная самозанятость • Аренда по 12 часов
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold text-white leading-tight tracking-tight">
+                        Аренда настольных игр, услуги Мастера и <span class="text-amber-400">игрок в вашу компанию</span>
+                    </h1>
+                    <p class="text-slate-300 text-base sm:text-lg leading-relaxed max-w-2xl">
+                        Берите проверенные настольные игры на 12 часов или заказывайте организацию полноценного игрового вечера. Проводим сессии Dungeons & Dragons (ваншоты и кампейны), модерируем партии в Монополию, Бункер, Codenames, Имаджинариум, Взлёт разрешён, а также выезжаем как дополнительный игрок, если вам не хватает человека.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-4 pt-2">
+                        <a href="#catalog" class="px-6 py-3.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm uppercase tracking-wider transition-all">
+                            Выбрать игру в прокат
+                        </a>
+                        <a href="#services" class="px-6 py-3.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm uppercase tracking-wider border border-slate-700 transition-all">
+                            Ведущий и Друг на игру
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-6 pt-8 border-t border-slate-800/80">
+                        <div>
+                            <div class="text-white font-bold text-lg sm:text-xl">12 часов</div>
+                            <div class="text-xs text-slate-400 mt-0.5">базовый шаг аренды игры</div>
+                        </div>
+                        <div>
+                            <div class="text-amber-400 font-bold text-lg sm:text-xl">Залог 0 ₽</div>
+                            <div class="text-xs text-slate-400 mt-0.5">при заказе Ведущего на партию</div>
+                        </div>
+                        <div>
+                            <div class="text-white font-bold text-lg sm:text-xl">200 ₽</div>
+                            <div class="text-xs text-slate-400 mt-0.5">личная доставка или самовывоз</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Блок быстрого выбора формата -->
+                <div class="lg:col-span-5">
+                    <div class="surface-card rounded-2xl p-6 sm:p-8 border border-slate-700/80 space-y-6">
+                        <div class="border-b border-slate-800 pb-4">
+                            <span class="text-xs font-bold uppercase tracking-widest text-amber-400">Форматы работы</span>
+                            <h2 class="text-xl font-bold text-white mt-1">Что можно заказать в «Гильдии Игр»</h2>
+                        </div>
+
+                        <div class="space-y-4 text-sm">
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <div class="flex justify-between items-center font-bold text-white mb-1">
+                                    <span>1. Прокат настольных игр</span>
+                                    <span class="text-amber-400">от 250 ₽ / 12 ч</span>
+                                </div>
+                                <p class="text-slate-400 text-xs leading-relaxed">
+                                    Выбираете коробку в каталоге на 12 часов (от 36 часов скидка 15%), забираете самовывозом или заказываете нашу личную доставку за 200 ₽.
+                                </p>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                                <div class="flex justify-between items-center font-bold text-white mb-1">
+                                    <span>2. Ведущий (D&D и Настольные игры)</span>
+                                    <span class="text-amber-400">С угощениями • Залог 0 ₽</span>
+                                </div>
+                                <p class="text-slate-400 text-xs leading-relaxed">
+                                    Ваншоты и кампейны по D&D, проведение партий в Монополию, Бункер, Codenames, Имаджинариум. Привозим различные угощения по вашим пожеланиям.
+                                </p>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-900/80 border border-amber-500/30">
+                                <div class="flex justify-between items-center font-bold text-white mb-1">
+                                    <span>3. Услуга «Друг для настолок»</span>
+                                    <span class="text-emerald-400">+100 ₽ (на 3 часа+)</span>
+                                </div>
+                                <p class="text-slate-400 text-xs leading-relaxed">
+                                    Не хватает игрока или хотите сыграть 1 на 1? Приеду на 3 часа (по ситуации часто можем продлить и дольше без доплаты!). Залог за саму игру сохраняется.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+                            <span>Telegram: <a href="https://t.me/Kotenoknikita" target="_blank" class="text-amber-400 hover:underline font-semibold">@Kotenoknikita</a></span>
+                            <span>MAX: <strong class="text-slate-200">89153202259</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Раздел 1: Каталог настольных игр (Аренда за 12 часов) -->
+    <section id="catalog" class="py-20 border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+                <div>
+                    <span class="text-amber-400 text-xs font-bold uppercase tracking-widest">Каталог проката</span>
+                    <h2 class="text-3xl font-bold text-white mt-1">Аренда настольных игр на 12 часов</h2>
+                    <p class="text-slate-400 text-sm mt-2">Стоимость указана за 12 часов аренды. Вы можете увеличить количество 12-часовых периодов при оформлении заказа.</p>
+                </div>
+
+                <!-- Кнопка добавления игры (появляется только после секретного входа владельца) -->
+                <div id="owner-add-btn-wrap" class="hidden">
+                    <button onclick="openAdminModal()" class="px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all">
+                        Управление каталогом
+                    </button>
+                </div>
+            </div>
+
+            <!-- Фильтры категорий и строка поиска -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-8">
+                <div class="flex flex-wrap gap-2" id="category-filters">
+                    <button onclick="filterGames('all')" data-cat="all" class="filter-btn px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-amber-500 text-slate-950 transition-all">Все игры</button>
+                    <button onclick="filterGames('Для компании')" data-cat="Для компании" class="filter-btn px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">Для компании</button>
+                    <button onclick="filterGames('Стратегии и Семейные')" data-cat="Стратегии и Семейные" class="filter-btn px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">Стратегии и Семейные</button>
+                    <button onclick="filterGames('Карточные')" data-cat="Карточные" class="filter-btn px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">Карточные</button>
+                </div>
+
+                <div class="relative sm:w-72">
+                    <input type="text" id="search-input" oninput="renderGames()" placeholder="Поиск по названию..." class="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
+                </div>
+            </div>
+
+            <!-- Сетка карточек игр -->
+            <div id="games-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Генерируется через JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Раздел 2: Услуги Ведущего и «Друг для настолок» -->
+    <section id="services" class="py-20 bg-slate-900/40 border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mb-12">
+                <span class="text-amber-400 text-xs font-bold uppercase tracking-widest">Игровые сервисы и сопровождение</span>
+                <h2 class="text-3xl font-bold text-white mt-1">Заказ Ведущего (Мастера) и услуга «Друг для настолок»</h2>
+                <p class="text-slate-400 text-sm sm:text-base mt-2 leading-relaxed">
+                    При заказе полноценного пакета <strong class="text-white">Ведущего (D&D или Настольные игры) денежный залог за коробки не взимается (0 ₽)</strong>, а в стоимость уже входят различные угощения. При заказе услуги «Друг для настолок» (+100 ₽) базовое время игры составляет 3 часа (по ситуации часто можем продлить без доплаты), при этом стандартный залог за арендуемую коробку сохраняется.
                 </p>
+            </div>
+
+            <!-- Сетка услуг -->
+            <div id="services-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Генерируется через JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Раздел 3: 3D-печать на заказ (Покупка) -->
+    <section id="printing" class="py-20 border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="surface-card rounded-2xl p-8 sm:p-10 border border-slate-700">
+                <div class="grid lg:grid-cols-12 gap-8 items-center">
+                    <div class="lg:col-span-8 space-y-4">
+                        <span class="px-3 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider">
+                            Только покупка под заказ
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-white">Индивидуальная 3D-печать на заказ</h2>
+                        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                            Мы не сдаём 3D-печатные изделия в аренду — все аксессуары, башни для кубиков, жетоны, фишки и кастомные модели изготавливаются индивидуально на 3D-принтере <strong>на покупку в вашу собственность</strong>.
+                        </p>
+                        <div class="grid sm:grid-cols-2 gap-4 pt-2 text-sm text-slate-300">
+                            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+                                <div class="font-bold text-white mb-1">Что можно напечатать</div>
+                                <p class="text-xs text-slate-400">Фишки и компоненты взамен утерянных, кастомные аксессуары для ваших настольных игр, модели по вашим STL-файлам или под заказ.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+                                <div class="font-bold text-white mb-1">Как рассчитывается заказ</div>
+                                <p class="text-xs text-slate-400">Что именно напечатать, цвет пластика, размеры и точная стоимость покупки обсуждаются напрямую в Telegram (@Kotenoknikita), в MAX (89153202259) или по почте Gmail.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-4 flex flex-col gap-3 bg-slate-900/90 p-6 rounded-xl border border-slate-800">
+                        <div class="text-sm font-bold text-white">Заказать расчёт 3D-печати</div>
+                        <p class="text-xs text-slate-400 leading-relaxed mb-2">
+                            Добавьте заявку на 3D-печать к вашему заказу или напишите напрямую в Telegram / MAX для отправки ссылки на модель.
+                        </p>
+                        <button onclick="addPrintOrderToCart()" class="w-full py-3 px-4 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all">
+                            Добавить запрос на 3D-печать в заказ
+                        </button>
+                        <a href="https://t.me/Kotenoknikita" target="_blank" class="w-full py-3 px-4 rounded-lg bg-slate-800 hover:bg-slate-700 text-center text-slate-200 font-semibold text-xs uppercase tracking-wider border border-slate-700 transition-all">
+                            Написать в Telegram (@Kotenoknikita)
+                        </a>
+                        <div class="text-[11px] text-center text-slate-400 pt-1">
+                            Номер в MAX: <strong class="text-white select-all">89153202259</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Раздел 4: Доставка, передача игры и правила залога -->
+    <section id="delivery" class="py-20 border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl mb-12">
+                <span class="text-amber-400 text-xs font-bold uppercase tracking-widest">Логистика и условия</span>
+                <h2 class="text-3xl font-bold text-white mt-1">Доставка, правила отправки и залог</h2>
+                <p class="text-slate-400 text-sm mt-2">
+                    Мы не пересылаем игры через случайных курьеров такси — передача всегда происходит лично из рук в руки для полной сохранности комплекта.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="surface-card rounded-xl p-6 border border-slate-800">
+                    <div class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">Вариант 1 • Бесплатно</div>
+                    <h3 class="text-lg font-bold text-white mb-2">Самовывоз (0 ₽)</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Вы забираете игру самостоятельно по предварительной договорённости. При встрече мы вместе открываем коробку, проверяем состояние карточек и комплектацию по описи.
+                    </p>
+                </div>
+
+                <div class="surface-card rounded-xl p-6 border border-slate-800">
+                    <div class="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2">Вариант 2 • Лично в руки</div>
+                    <h3 class="text-lg font-bold text-white mb-2">Наша доставка (+200 ₽)</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Никаких сторонних курьеров такси. Мы лично привезём настольную игру в защитной упаковке по вашему адресу за фиксированную доплату 200 рублей или приедем для проведения игры.
+                    </p>
+                </div>
+
+                <div class="surface-card rounded-xl p-6 border border-slate-800">
+                    <div class="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2">Гарантия сохранности</div>
+                    <h3 class="text-lg font-bold text-white mb-2">Система возвратного залога</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        При аренде коробки (в том числе с услугой «Друг для настолок») вносится возвратный залог. Он полностью возвращается сразу после сдачи игры. При заказе Ведущего залог равен 0 ₽.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Плашка с переходом к официальному договору -->
+            <div class="surface-card rounded-xl p-6 sm:p-8 border border-amber-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div class="space-y-1 max-w-2xl">
+                    <h3 class="text-lg font-bold text-white">Официальный договор публичной оферты</h3>
+                    <p class="text-slate-400 text-sm">
+                        Все условия 12-часовой аренды, правила бережного обращения с игрой, порядок возврата залога, работа Ведущего и условия услуги «Друг для настолок» зафиксированы в официальном документе. Связь: Telegram (@Kotenoknikita), MAX (89153202259) или Gmail.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-3 shrink-0">
+                    <button onclick="openLegalModal()" class="px-5 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all">
+                        Открыть Договор оферты
+                    </button>
+                    <button onclick="openChecklistModal()" class="px-5 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs uppercase tracking-wider border border-slate-700 transition-all">
+                        Памятка по комплектации
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Подвал сайта -->
+    <footer class="bg-guild-950 py-12 text-sm text-slate-400">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pb-8 border-b border-slate-900">
+                <div class="space-y-3">
+                    <span class="font-display text-lg font-bold text-white tracking-wider block">ГИЛЬДИЯ ИГР</span>
+                    <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
+                        Сервис проката настольных игр (расчётный интервал — 12 часов), организация партий с Ведущим, услуга «Друг для настолок» и индивидуальная 3D-печать на покупку.
+                    </p>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="text-white font-semibold text-xs uppercase tracking-wider">Навигация и документы</div>
+                    <ul class="space-y-1.5 text-xs">
+                        <li><a href="#catalog" class="hover:text-amber-400">Каталог настольных игр (12 ч)</a></li>
+                        <li><a href="#services" class="hover:text-amber-400">Ведущий D&D / Настолки / Друг на игру</a></li>
+                        <li><a href="#printing" class="hover:text-amber-400">Покупка 3D-печати на заказ</a></li>
+                        <li><button onclick="openLegalModal()" class="hover:text-amber-400 text-left">Договор публичной оферты и правила залога</button></li>
+                    </ul>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="text-white font-semibold text-xs uppercase tracking-wider">Каналы связи и приём заказов</div>
+                    <p class="text-xs text-slate-400">Выберите удобную кнопку отправки в корзине или напишите напрямую:</p>
+                    <div class="pt-1 space-y-1.5 text-xs text-slate-300">
+                        <div>Telegram: <a href="https://t.me/Kotenoknikita" target="_blank" class="text-amber-400 font-semibold hover:underline">@Kotenoknikita</a></div>
+                        <div>Мессенджер MAX: <button onclick="copyMaxNumber()" class="text-amber-400 font-semibold hover:underline">89153202259 (нажмите, чтобы скопировать)</button></div>
+                        <div>Почта Gmail: через кнопку отправки в корзине</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <div>© 2026 «Гильдия Игр». Официальная деятельность самозанятого (плательщик НПД).</div>
+                <div>При оформлении аренды вы соглашаетесь с условиями публичной оферты.</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================
+         МОДАЛЬНОЕ ОКНО 1: ОФОРМЛЕНИЕ ЗАКАЗА (КОРЗИНА)
+         ========================================== -->
+    <div id="cart-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
+        <div class="surface-card border border-slate-700 rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl my-8 relative max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <div>
+                    <h3 class="text-xl font-bold text-white">Оформление заказа — «Гильдия Игр»</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Проверьте состав заказа, заполните поля и нажмите кнопку нужного мессенджера или почты внизу</p>
+                </div>
+                <button onclick="closeCartModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Список позиций -->
+            <div id="cart-items-container" class="py-5 space-y-3"></div>
+
+            <!-- Блок расчёта времени (по 12 часов) и доставки -->
+            <div class="bg-slate-900/90 rounded-xl p-4 sm:p-5 border border-slate-800 mb-6 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                    <div>
+                        <label class="text-sm font-semibold text-white block">Срок аренды настольных игр (шаг — 12 часов):</label>
+                        <span class="text-xs text-slate-400">От 3 слотов (36 часов и более) действует скидка 15% на прокат игр</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="changeSlots(-1)" class="w-8 h-8 rounded bg-slate-800 hover:bg-slate-700 text-white font-bold">-</button>
+                        <span id="slots-display" class="text-sm font-extrabold text-amber-400 w-32 text-center">12 ч (1 × 12ч)</span>
+                        <button type="button" onclick="changeSlots(1)" class="w-8 h-8 rounded bg-slate-800 hover:bg-slate-700 text-white font-bold">+</button>
+                    </div>
+                </div>
+
+                <!-- Выбор способа получения радиокнопками -->
+                <div class="pb-3 border-b border-slate-800 space-y-2">
+                    <label class="text-sm font-semibold text-white block">Способ получения / выезда:</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <label class="flex items-center gap-3 p-3 rounded-lg bg-slate-800/80 border border-slate-700 cursor-pointer hover:border-amber-500/50 transition-all">
+                            <input type="radio" name="delivery_option" value="pickup" checked onchange="updateCartUI()" class="accent-amber-500 w-4 h-4">
+                            <div>
+                                <div class="text-xs font-bold text-white">Самовывоз — 0 ₽</div>
+                                <div class="text-[11px] text-slate-400">По предварительной договорённости</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 rounded-lg bg-slate-800/80 border border-slate-700 cursor-pointer hover:border-amber-500/50 transition-all">
+                            <input type="radio" name="delivery_option" value="personal_delivery" onchange="updateCartUI()" class="accent-amber-500 w-4 h-4">
+                            <div>
+                                <div class="text-xs font-bold text-white">Наша личная доставка — 200 ₽</div>
+                                <div class="text-[11px] text-slate-400">Сами привезём игру по вашему адресу</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between text-slate-300">
+                        <span>Аренда игр (за выбранное время):</span>
+                        <span id="sum-rental" class="font-semibold text-white">0 ₽</span>
+                    </div>
+                    <div class="flex justify-between text-slate-300">
+                        <span>Услуги Ведущего / Друг для настолок:</span>
+                        <span id="sum-services" class="font-semibold text-white">0 ₽</span>
+                    </div>
+                    <div class="flex justify-between text-slate-300">
+                        <span>Доставка:</span>
+                        <span id="sum-delivery" class="font-semibold text-white">0 ₽</span>
+                    </div>
+                    <div class="flex justify-between text-emerald-400 bg-emerald-500/10 px-3 py-2 rounded-lg border border-emerald-500/20 text-xs sm:text-sm">
+                        <span id="sum-deposit-label">Возвратный залог за игры:</span>
+                        <span id="sum-deposit" class="font-bold">0 ₽</span>
+                    </div>
+                    <div class="flex justify-between text-base sm:text-lg font-bold text-white pt-2 border-t border-slate-800">
+                        <span>Итого к оплате при получении:</span>
+                        <span id="sum-total" class="text-amber-400">0 ₽</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Контактные данные клиента (без лишнего поля "Где обсудить") -->
+            <form id="checkout-form" onsubmit="event.preventDefault();" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Ваше имя *</label>
+                        <input type="text" id="client-name" required placeholder="Как к вам обращаться" class="w-full px-3.5 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Телефон для связи *</label>
+                        <input type="tel" id="client-contact" required placeholder="8 (999) 000-00-00" class="w-full px-3.5 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Дата и время начала *</label>
+                        <input type="datetime-local" id="client-date" required class="w-full px-3.5 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+
+                <!-- Умное динамическое поле (подсказка и заголовок меняются от выбора клиента) -->
+                <div class="space-y-1.5">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <label id="dynamic-comment-label" for="client-comment" class="block text-xs font-semibold uppercase tracking-wider text-amber-400">
+                            Комментарий к заказу
+                        </label>
+                        <span id="dynamic-comment-helper" class="px-2.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[11px] text-amber-300 font-medium">
+                            Подсказка адаптирована под ваш выбор
+                        </span>
+                    </div>
+                    <textarea id="client-comment" rows="3" placeholder="Заполните информацию..." class="w-full px-3.5 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500 leading-relaxed"></textarea>
+                </div>
+
+                <!-- Обязательное согласие с договором -->
+                <div class="bg-slate-900 border border-amber-500/30 rounded-xl p-4">
+                    <label class="flex items-start gap-3 cursor-pointer select-none">
+                        <input type="checkbox" id="legal-agree-checkbox" class="mt-1 w-4 h-4 rounded accent-amber-500 shrink-0">
+                        <span class="text-xs text-slate-300 leading-relaxed">
+                            Я ознакомлен(а) с 
+                            <button type="button" onclick="openLegalModal()" class="text-amber-400 underline font-semibold hover:text-amber-300">Договором публичной оферты</button>, 
+                            правилами залога (отменяется только при заказе Ведущего; при услуге «Друг для настолок» залог за игру сохраняется) и условиями аренды на 12 часов.
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Кнопки выбора куда отправить заказ -->
+                <div class="pt-1">
+                    <div class="text-xs text-slate-400 mb-2 font-medium">Выберите, куда отправить готовую заявку:</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button type="button" onclick="submitOrder('telegram')" class="py-3 px-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all text-center">
+                            В Telegram (@Kotenoknikita)
+                        </button>
+                        <button type="button" onclick="submitOrder('max')" class="py-3 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-white border border-amber-500/40 font-semibold text-xs uppercase tracking-wider transition-all text-center">
+                            В MAX (89153202259)
+                        </button>
+                        <button type="button" onclick="submitOrder('gmail')" class="py-3 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 font-semibold text-xs uppercase tracking-wider transition-all text-center">
+                            На почту (Gmail)
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         МОДАЛЬНОЕ ОКНО: ПОДТВЕРЖДЕНИЕ ОТПРАВКИ В MAX (89153202259)
+         ========================================== -->
+    <div id="max-send-modal" class="fixed inset-0 z-[65] hidden items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
+        <div class="surface-card border border-amber-500/50 rounded-2xl max-w-md w-full p-6 sm:p-7 shadow-2xl space-y-5 text-center">
+            <div class="space-y-1">
+                <span class="px-3 py-1 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider">Текст заказа скопирован</span>
+                <h3 class="text-lg font-bold text-white pt-2">Отправка заказа в мессенджер MAX</h3>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Полный текст вашей заявки уже скопирован в буфер обмена. Отправьте его в мессенджер <strong>MAX</strong> по номеру телефона:
+                </p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-between gap-3">
+                <div class="text-left">
+                    <span class="text-[11px] text-slate-400 uppercase block">Номер получателя в MAX:</span>
+                    <span id="max-phone-display" class="text-xl font-extrabold text-amber-400 tracking-wide select-all">89153202259</span>
+                </div>
+                <button type="button" onclick="copyMaxNumber()" class="px-3.5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider">
+                    Копировать номер
+                </button>
+            </div>
+
+            <div class="text-xs text-slate-400 text-left bg-slate-900/60 p-3.5 rounded-lg border border-slate-800 space-y-1">
+                <div>1. Откройте приложение <strong>MAX</strong> и найдите контакт <strong>89153202259</strong>.</div>
+                <div>2. Вставьте скопированный текст заявки в чат и отправьте.</div>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-1">
+                <button type="button" onclick="closeMaxSendModal()" class="w-full py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs uppercase tracking-wider">
+                    Понятно, закрыть
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Admin Dashboard -->
-    <div id="adminSection" class="hidden-section min-h-screen">
-        <!-- Header -->
-        <header class="border-b border-white/5 bg-black/20 backdrop-blur-xl sticky top-0 z-40">
-            <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center font-bold text-white text-lg">W</div>
+    <!-- ==========================================
+         МОДАЛЬНОЕ ОКНО 2: ОФИЦИАЛЬНЫЙ ДОГОВОР ПУБЛИЧНОЙ ОФЕРТЫ
+         ========================================== -->
+    <div id="legal-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md overflow-y-auto">
+        <div class="surface-card border border-slate-700 rounded-2xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl my-8 relative max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800 shrink-0">
+                <div>
+                    <h3 class="text-lg sm:text-xl font-bold text-white">Договор публичной оферты на прокат настольных игр и оказание услуг</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Официальный документ сервиса «Гильдия Игр» (плательщик НПД — самозанятый)</p>
+                </div>
+                <button onclick="closeLegalModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold">
+                    ✕
+                </button>
+            </div>
+
+            <div id="legal-document-text" class="py-5 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed pr-2">
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 text-slate-200">
+                    <strong>ОФИЦИАЛЬНОЕ УВЕДОМЛЕНИЕ:</strong> Настоящий документ является публичной офертой в соответствии со ст. 435 и ч. 2 ст. 437 Гражданского кодекса Российской Федерации. Оформляя заказ на сайте «Гильдия Игр», а также направляя заявку через Telegram (@Kotenoknikita), мессенджер MAX (89153202259) или электронную почту Gmail, Заказчик (Арендатор) подтверждает своё полное и безоговорочное согласие со всеми пунктами настоящего Договора.
+                </div>
+
+                <h4 class="text-white font-bold text-base pt-2">1. Предмет договора и статус Исполнителя</h4>
+                <p>1.1. Исполнитель (Наймодатель) применяет специальный налоговый режим «Налог на профессиональный доход» (Самозанятый) в соответствии с Федеральным законом № 422-ФЗ.</p>
+                <p>1.2. Исполнитель обязуется предоставить Арендатору во временное владение и пользование настольные игры (прокат), оказать услуги Ведущего (Гейммастера), услугу соигрока («Друг для настолок») либо изготовить изделия методом 3D-печати на покупку по индивидуальному заказу, а Заказчик обязуется оплатить выбранные услуги и своевременно вернуть арендованное имущество.</p>
+
+                <h4 class="text-white font-bold text-base pt-2">2. Срок аренды и порядок расчёта (интервал 12 часов)</h4>
+                <p>2.1. Базовая единица расчёта времени проката настольной игры составляет <strong>12 (двенадцать) часов</strong> с момента фактической передачи игры Арендатору.</p>
+                <p>2.2. Арендатор вправе выбрать любое количество 12-часовых периодов при оформлении заказа (12 часов, 24 часа, 36 часов и более). При единовременном заказе от 3 периодов (36 часов и более) предоставляется скидка 15% на стоимость аренды игр.</p>
+
+                <h4 class="text-white font-bold text-base pt-2">3. Обеспечительный платёж (Залог) и условия его отмены</h4>
+                <p>3.1. При получении настольной игры в аренду Арендатор вносит возвратный обеспечительный платёж (Залог) в размере, указанном в карточке соответствующей игры в каталоге (согласно ст. 381.1 ГК РФ).</p>
+                <p>3.2. <strong>Залог НЕ взимается (равен 0 ₽) ИСКЛЮЧИТЕЛЬНО при заказе полноценной услуги Ведущего (Мастера):</strong> «D&D 5e: Ваншот», «D&D 5e: Кампейн» или «Ведущий на настольные игры».</p>
+                <p>3.3. <strong>Важное условие по услуге «Друг для настолок» (+100 ₽):</strong> заказ услуги соигрока «Друг для настолок» НЕ отменяет залог за саму арендуемую настольную игру. Залог за коробку вносится на общих основаниях и полностью возвращается после завершения партии и проверки комплектности игры.</p>
+                <p>3.4. При возврате настольной игры в срок и в полной комплектации сумма Залога возвращается Арендатору в размере 100% сразу после проверки содержимого коробки по описи.</p>
+
+                <h4 class="text-white font-bold text-base pt-2">4. Доставка, приёмка-передача и сохранность игр</h4>
+                <p>4.1. Передача настольных игр осуществляется одним из двух способов: самовывозом (0 ₽, по предварительной договорённости) либо личной доставкой силами Исполнителя по адресу Заказчика (стоимость доставки — 200 рублей). Передача через сторонних водителей такси без сопровождения не производится.</p>
+                <p>4.2. При передаче игры стороны проверяют комплектацию коробки и проводят фотофиксацию. Арендатор обязуется бережно обращаться с игровым полем, карточками, фишками и правилами: не допускать залития жидкостями, разрывов и сгибания карт.</p>
+                <p>4.3. В случае утери или повреждения отдельных компонентов из Залога удерживается стоимость восстановления повреждённого элемента:</p>
+                <ul class="list-disc pl-5 space-y-1 text-slate-300">
+                    <li>Утеря или порча стандартного кубика, фишки или жетона — <strong>150 ₽ за штуку</strong>.</li>
+                    <li>Порча или утеря от 1 до 3 игровых карт — <strong>300 ₽</strong>.</li>
+                    <li>Критическое повреждение игры (залитие игрового поля напитками, утеря или порча более 10% колоды карт, делающая невозможной дальнейшую игру) — Залог удерживается в полном объёме, а повреждённый экземпляр игры остаётся у Арендатора.</li>
+                </ul>
+
+                <h4 class="text-white font-bold text-base pt-2">5. Услуги Ведущего, «Друг для настолок» и 3D-печать</h4>
+                <p>5.1. При заказе Ведущего (D&D Ваншот, D&D Кампейн, Ведущий на настольные игры) в стоимость включены организация и ведение партии, игровой реквизит, а также привоз различных угощений и закусок (пожелания по составу угощений и наличию аллергий Заказчик указывает при оформлении заявки).</p>
+                <p>5.2. Услуга «Друг для настолок» (+100 ₽ к стоимости аренды выбранной игры) подразумевает участие Исполнителя в партии 1 на 1 или в компании Заказчика в качестве игрока. Базовое расчётное время услуги составляет <strong>3 (три) часа</strong>, однако по ситуации и взаимному желанию Исполнитель может самостоятельно продлить время участия в игре совершенно бесплатно (без доплаты).</p>
+                <p>5.3. Изделия из раздела «3D-печать на заказ» не сдаются в прокат, а изготавливаются исключительно на покупку. Точный вид модели, параметры печати и итоговая цена согласовываются сторонами в Telegram (@Kotenoknikita), мессенджере MAX (89153202259) или по почте Gmail до начала печати.</p>
+                <p>5.4. Исполнитель вправе досрочно прекратить оказание услуг на выезде без возврата оплаты в случае агрессивного поведения участников или умышленной порчи имущества.</p>
+            </div>
+
+            <div class="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <button onclick="copyLegalText()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold uppercase tracking-wider">
+                        Скопировать текст
+                    </button>
+                    <button onclick="window.print()" class="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold uppercase tracking-wider">
+                        Печать документа
+                    </button>
+                </div>
+                <button onclick="acceptLegalFromModal()" class="px-6 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider">
+                    Принимаю условия договора
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         МОДАЛЬНОЕ ОКНО 3: ПАМЯТКА ПО ПЕРЕДАЧЕ И УПАКОВКЕ ИГР
+         ========================================== -->
+    <div id="checklist-modal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md overflow-y-auto">
+        <div class="surface-card border border-slate-700 rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl my-8 relative">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <div>
+                    <h3 class="text-lg font-bold text-white">Правила подготовки, доставки и приёмки настольной игры</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Как мы обеспечиваем идеальное состояние каждой коробки</p>
+                </div>
+                <button onclick="closeChecklistModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold">
+                    ✕
+                </button>
+            </div>
+
+            <div class="py-5 space-y-4 text-sm text-slate-300 leading-relaxed">
+                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+                    <h4 class="text-amber-400 font-bold mb-1">1. Опись комплектации внутри коробки</h4>
+                    <p class="text-xs sm:text-sm text-slate-300">В каждой коробке находится точный список всех колод, кубиков, правил и жетонов. Перед тем как отдать игру вам (самовывозом или нашей доставкой за 200 ₽), комплект сверяется по этому списку.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+                    <h4 class="text-amber-400 font-bold mb-1">2. Защита карт и транспортировка</h4>
+                    <p class="text-xs sm:text-sm text-slate-300">Карточки разложены по отдельным зип-пакетам и защищены протекторами, а сама коробка при выезде упаковывается в плотный влагозащитный пакет, чтобы углы коробки не замялись в дороге.</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+                    <h4 class="text-amber-400 font-bold mb-1">3. Как сложить игру перед возвратом</h4>
+                    <p class="text-xs sm:text-sm text-slate-300">После завершения партии убедитесь, что все карточки, деньги (в Монополии) и фишки собраны со стола и уложены в пакеты внутри коробки, чтобы они не помялись при переноске. Сразу после быстрой проверки мы возвращаем вам залог.</p>
+                </div>
+            </div>
+
+            <div class="pt-2 text-right">
+                <button onclick="closeChecklistModal()" class="px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider">Закрыть памятку</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         МОДАЛЬНОЕ ОКНО 4: СКРЫТАЯ ПАНЕЛЬ ВЛАДЕЛЬЦА
+         ========================================== -->
+    <div id="admin-modal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md overflow-y-auto">
+        <div class="surface-card border border-amber-500/40 rounded-2xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl my-8 relative max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <div>
+                    <h3 class="text-xl font-bold text-white">Закрытая панель управления — «Гильдия Игр»</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Добавление и удаление настольных игр в каталоге</p>
+                </div>
+                <button onclick="closeAdminModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-sm font-bold">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Экран авторизации (проверка по криптографическому хешу) -->
+            <div id="admin-login-view" class="py-8 max-w-sm mx-auto text-center space-y-4">
+                <h4 class="text-base font-bold text-white uppercase tracking-wider">Авторизация владельца</h4>
+                <p class="text-xs text-slate-400">Введите секретный ключ доступа для редактирования каталога сайта.</p>
+                <div class="space-y-3">
+                    <input type="password" id="admin-secret-input" placeholder="Секретный пароль..." onkeydown="if(event.key==='Enter') verifyAdminSecret()" class="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 text-center text-white font-semibold focus:outline-none focus:border-amber-500">
+                    <button onclick="verifyAdminSecret()" class="w-full py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all">
+                        Войти в панель
+                    </button>
+                </div>
+            </div>
+
+            <!-- Экран управления каталогом -->
+            <div id="admin-dashboard-view" class="hidden py-5 space-y-6">
+                <div class="bg-slate-900/90 p-5 rounded-xl border border-slate-800 space-y-4">
+                    <h4 class="text-sm font-bold text-amber-400 uppercase tracking-wider">Добавить новую настольную игру</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Название игры *</label>
+                            <input type="text" id="new-game-title" placeholder="Например: Колонизаторы" class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Категория *</label>
+                            <select id="new-game-category" class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm">
+                                <option value="Для компании">Для компании</option>
+                                <option value="Стратегии и Семейные">Стратегии и Семейные</option>
+                                <option value="Карточные">Карточные</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Цена за 12 часов (₽) *</label>
+                            <input type="number" id="new-game-price" placeholder="300" class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Залог (₽) *</label>
+                            <input type="number" id="new-game-deposit" placeholder="2000" class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Кол-во игроков</label>
+                            <input type="text" id="new-game-players" placeholder="2–6 игроков" class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Время партии</label>
+                            <input type="text" id="new-game-time" placeholder="40–60 мин" class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Сложность правил</label>
+                            <select id="new-game-complexity" class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm">
+                                <option value="Простая">Простая</option>
+                                <option value="Средняя">Средняя</option>
+                                <option value="Сложная">Сложная</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Метка на карточке (необязательно)</label>
+                            <input type="text" id="new-game-badge" placeholder="Популярное / Новинка" class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm">
+                        </div>
+                    </div>
+
                     <div>
-                        <h1 class="font-bold text-white">Админ-панель</h1>
-                        <p class="text-xs text-gray-400">WebCraft Studio</p>
+                        <label class="block text-xs text-slate-400 mb-1">Описание игры *</label>
+                        <textarea id="new-game-desc" rows="2" placeholder="Описание игрового процесса и комплектации..." class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm"></textarea>
                     </div>
-                </div>
-                <div class="flex items-center gap-4">
-                    <button onclick="exportOrders()" class="btn-secondary">
-                        📥 Экспорт CSV
-                    </button>
-                    <button onclick="logout()" class="btn-secondary">
-                        🚪 Выйти
+
+                    <button onclick="addNewGameByOwner()" class="w-full py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition-all">
+                        Опубликовать игру в каталоге
                     </button>
                 </div>
-            </div>
-        </header>
 
-        <main class="max-w-7xl mx-auto px-6 py-8">
-            <!-- Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalOrders">0</div>
-                    <div class="text-sm text-gray-400 mt-2">Всего заявок</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="newOrders">0</div>
-                    <div class="text-sm text-gray-400 mt-2">Новых</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="inProgressOrders">0</div>
-                    <div class="text-sm text-gray-400 mt-2">В работе</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="completedOrders">0</div>
-                    <div class="text-sm text-gray-400 mt-2">Завершено</div>
-                </div>
-            </div>
-
-            <!-- Orders List -->
-            <div class="mb-6">
-                <h2 class="text-xl font-bold text-white mb-4">Заявки</h2>
-                <div id="ordersContainer">
-                    <div class="glass-card p-12 text-center">
-                        <div class="text-6xl mb-4">📭</div>
-                        <h3 class="text-lg font-bold text-white mb-2">Пока нет заявок</h3>
-                        <p class="text-gray-400">Заявки появятся здесь после отправки формы на сайте</p>
+                <!-- Настройки контактов -->
+                <div class="bg-slate-900/90 p-5 rounded-xl border border-slate-800 space-y-4">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-wider">Настройки получения заказов и Telegram-уведомлений</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Логин Telegram (без @)</label>
+                            <input type="text" id="owner-tg-username" value="Kotenoknikita" class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Номер телефона MAX</label>
+                            <input type="text" id="owner-max-phone" value="89153202259" class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Почта Gmail для приёма заявок</label>
+                            <input type="email" id="owner-email" placeholder="yourname@gmail.com" class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Telegram Bot Token (опционально для авто-уведомлений)</label>
+                            <input type="password" id="owner-bot-token" placeholder="123456:ABC-DEF..." class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Telegram Chat ID (опционально)</label>
+                            <input type="text" id="owner-chat-id" placeholder="Ваш ID в Telegram" class="w-full px-3.5 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm">
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                        <button onclick="saveOwnerSettings()" class="px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider">
+                            Сохранить настройки
+                        </button>
+                        <div class="flex items-center gap-2">
+                            <button onclick="resetCatalogToDefaults()" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs">
+                                Сбросить каталог по умолчанию
+                            </button>
+                            <button onclick="logoutAdmin()" class="px-3.5 py-2 rounded-lg bg-red-500/15 hover:bg-red-500/25 text-red-400 text-xs font-semibold">
+                                Выйти из режима владельца
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
     <script>
-        const ADMIN_PASSWORD = 'admin2026';
-        
-        if (localStorage.getItem('adminLoggedIn') === 'true') {
-            showAdminPanel();
-        }
+        // ==========================================
+        // КАТАЛОГ НАСТОЛЬНЫХ ИГР (АРЕНДА ЗА 12 ЧАСОВ)
+        // ==========================================
+        const DEFAULT_GAMES = [
+            {
+                id: 'game-bunker',
+                title: 'Бункер',
+                category: 'Для компании',
+                price12h: 500,
+                deposit: 3000,
+                players: '4–16 игроков',
+                time: '45–90 мин',
+                complexity: 'Простая',
+                badge: 'Пати-гейм / Дискуссионная',
+                desc: 'Дискуссионная игра о выживании после глобальной катастрофы. Игроки получают случайные карты профессии, здоровья, биологии, хобби и багажа, после чего должны убедить остальных, что именно они достойны попасть в спасательный бункер.'
+            },
+            {
+                id: 'game-codenames',
+                title: 'Codenames (Кодовые имена)',
+                category: 'Для компании',
+                price12h: 350,
+                deposit: 2000,
+                players: '2–8+ игроков',
+                time: '15–30 мин',
+                complexity: 'Простая',
+                badge: 'Пати-гейм / Командная',
+                desc: 'Командная игра на ассоциации и логику. Капитаны двух секретных служб дают своим командам подсказки из одного слова и числа, чтобы агенты первыми вычислили всех своих связных на столе и не попали на карточку убийцы.'
+            },
+            {
+                id: 'game-monopoly',
+                title: 'Монополия (Классическая)',
+                category: 'Стратегии и Семейные',
+                price12h: 400,
+                deposit: 2500,
+                players: '2–6 игроков',
+                time: '60–120 мин',
+                complexity: 'Простая',
+                badge: 'Экономическая стратегия',
+                desc: 'Экономическая стратегия с покупкой недвижимости, строительством филиалов, торгами и арендной платой. Отлично подходит как для самостоятельной аренды, так и для игры с нашим Ведущим или «Другом для настолок».'
+            },
+            {
+                id: 'game-imaginarium-soyuz',
+                title: 'Имаджинариум: Союзмультфильм',
+                category: 'Для компании',
+                price12h: 400,
+                deposit: 2500,
+                players: '4–7 игроков',
+                time: '30–60 мин',
+                complexity: 'Простая',
+                badge: 'Ассоциации / Семейная',
+                desc: 'Специальное издание знаменитой игры на воображение и ассоциации, полностью иллюстрированное кадрами и героями любимых советских мультфильмов. Загадывайте ассоциации и угадывайте карточки других игроков.'
+            },
+            {
+                id: 'game-takeoff',
+                title: 'Взлёт разрешён!',
+                category: 'Стратегии и Семейные',
+                price12h: 400,
+                deposit: 2500,
+                players: '2–4 игрока',
+                time: '30–45 мин',
+                complexity: 'Простая',
+                badge: 'Семейная / Тактическая гонка',
+                desc: 'Динамичная настольная игра об управлении пассажирскими авиалайнерами в загруженном аэропорту. Выводите свои самолёты со стоянок на взлётную полосу, учитывайте погодные условия, маневрируйте на рулёжных дорожках и отправьте все свои рейсы в полёт быстрее соперников.'
+            },
+            {
+                id: 'game-uno-flip',
+                title: 'UNO Flip! (Уно Флип)',
+                category: 'Карточные',
+                price12h: 250,
+                deposit: 1000,
+                players: '2–10 игроков',
+                time: '15–40 мин',
+                complexity: 'Простая',
+                badge: 'Карточная / Быстрая',
+                desc: 'Улучшенная и более азартная версия классического Уно с двусторонними картами. В любой момент по специальной карте вся колода переворачивается со светлой стороны на тёмную, где действуют гораздо более жёсткие штрафы и спецэффекты.'
+            }
+        ];
 
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const password = document.getElementById('passwordInput').value;
-            
-            if (password === ADMIN_PASSWORD) {
-                localStorage.setItem('adminLoggedIn', 'true');
-                showAdminPanel();
-            } else {
-                document.getElementById('errorMsg').classList.remove('hidden');
+        // ==========================================
+        // УСЛУГИ ВЕДУЩЕГО И «ДРУГ ДЛЯ НАСТОЛОК»
+        // ==========================================
+        const GUILD_SERVICES = [
+            {
+                id: 'srv-dnd-oneshot',
+                isMaster: true,
+                title: 'D&D 5e: Ваншот (Завершенная история)',
+                price: 3800,
+                duration: 'Сессия 4–5 часов, до 6 игроков',
+                tag: 'Угощения включены • Залог 0 ₽',
+                desc: 'Полное проведение приключения на одну встречу с ярким сюжетом и финалом за один вечер. Идеально для знакомства с D&D или отдыха компанией.',
+                features: [
+                    'Готовые листы персонажей, наборы кубиков и звуковое сопровождение',
+                    'В стоимость включены различные угощения и закуски для компании (пожелания указываются при заказе)',
+                    'Полное объяснение правил по ходу игры — опыт не требуется',
+                    'Залог за игры не требуется (0 ₽)'
+                ]
+            },
+            {
+                id: 'srv-dnd-campaign',
+                isMaster: true,
+                title: 'D&D 5e: Кампейн (Серия игр / Кампания)',
+                price: 5500,
+                duration: 'Сессия 5–6 часов, глубокая проработка',
+                tag: 'Масштабный мир • Угощения включены • Залог 0 ₽',
+                desc: 'Долгосрочное приключение с развитием ваших героев, адаптацией сюжета под решения группы и проработанным авторским или классическим миром.',
+                features: [
+                    'Индивидуальная проработка предыстории героев, ведение летописи и сюжетных развилок',
+                    'В стоимость включены различные угощения и напитки (пожелания можно написать в заказе)',
+                    'Весь игровой реквизит, бланки и кубики привозит Мастер',
+                    'Залог за игры не требуется (0 ₽)'
+                ]
+            },
+            {
+                id: 'srv-boardgame-host',
+                isMaster: true,
+                title: 'Ведущий на настольные игры (Монополия, Бункер, Codenames, Имаджинариум, Взлёт разрешён)',
+                price: 3200,
+                duration: 'Выезд на 3–4 часа',
+                tag: 'Угощения к столу • Залог за коробки 0 ₽',
+                desc: 'Привезём выбранные игры из каталога, объясним правила за 5 минут без скучного чтения буклетов, проведём партию, проследим за правилами и подсчётом очков.',
+                features: [
+                    'Модерация партий в Монополию, Бункер, Codenames, Имаджинариум, Взлёт разрешён и UNO Flip!',
+                    'В стоимость входят различные угощения к столу (пожелания можно указать в заказе)',
+                    'Залог за арендуемые коробки при заказе Ведущего равен 0 ₽'
+                ]
+            },
+            {
+                id: 'srv-boardgame-friend',
+                isMaster: false,
+                title: 'Друг для настолок (Соперник 1 на 1 или недостающий игрок)',
+                price: 100,
+                duration: 'Базово 3 часа (часто можем продлить бесплатно по ситуации)',
+                tag: 'Доплата +100 ₽ к аренде • Залог за игру сохраняется',
+                desc: 'Идеально, если вы один и хотите сыграть дуэльную партию 1 на 1 или вашей компании не хватает одного человека. Приеду и сыграю наравне с вами!',
+                features: [
+                    'Доплата составляет всего +100 ₽ к стоимости аренды выбранной настольной игры',
+                    'Базовое время: 3 часа, но по ситуации и взаимному желанию часто можем продлить партию и задержаться дольше совершенно без доплаты',
+                    'Важно: так как это совместная игра за символическую доплату 100 ₽ (а не полный пакет ведущего), стандартный возвратный залог за саму арендуемую коробку сохраняется'
+                ]
+            }
+        ];
+
+        // ==========================================
+        // СОСТОЯНИЕ ПРИЛОЖЕНИЯ
+        // ==========================================
+        let gamesCatalog = [];
+        let currentCategory = 'all';
+        let cart = []; // { id, type: 'game'|'service'|'print', isMaster, title, price, deposit }
+        let slots12h = 1; // 1 слот = 12 часов
+        let isAdminLoggedIn = false;
+
+        let ownerSettings = {
+            tgUsername: 'Kotenoknikita',
+            maxPhone: '89153202259',
+            email: 'kotenoknikita@gmail.com',
+            botToken: '',
+            chatId: ''
+        };
+
+        // Секретный триггер: 5 кликов по логотипу за 2 секунды или Shift + Alt + G / П
+        let logoClickCount = 0;
+        let logoClickTimer = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStateFromStorage();
+            renderGames();
+            renderServices();
+            updateCartBadge();
+            initSecretTriggers();
+
+            const dateInput = document.getElementById('client-date');
+            if (dateInput) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(18, 0, 0, 0);
+                const tzOffset = tomorrow.getTimezoneOffset() * 60000;
+                dateInput.value = new Date(tomorrow - tzOffset).toISOString().slice(0, 16);
             }
         });
 
-        function showAdminPanel() {
-            document.getElementById('loginSection').classList.add('hidden-section');
-            document.getElementById('adminSection').classList.remove('hidden-section');
-            loadOrders();
+        function loadStateFromStorage() {
+            try {
+                const savedGames = localStorage.getItem('guild_games_catalog_v3');
+                if (savedGames) {
+                    gamesCatalog = JSON.parse(savedGames);
+                } else {
+                    gamesCatalog = [...DEFAULT_GAMES];
+                    localStorage.setItem('guild_games_catalog_v3', JSON.stringify(gamesCatalog));
+                }
+
+                const savedSettings = localStorage.getItem('guild_owner_settings_v3');
+                if (savedSettings) {
+                    ownerSettings = { ...ownerSettings, ...JSON.parse(savedSettings) };
+                }
+
+                document.getElementById('owner-tg-username').value = ownerSettings.tgUsername || 'Kotenoknikita';
+                document.getElementById('owner-max-phone').value = ownerSettings.maxPhone || '89153202259';
+                document.getElementById('owner-email').value = ownerSettings.email || '';
+                document.getElementById('owner-bot-token').value = ownerSettings.botToken || '';
+                document.getElementById('owner-chat-id').value = ownerSettings.chatId || '';
+            } catch (e) {
+                gamesCatalog = [...DEFAULT_GAMES];
+            }
         }
 
-        function logout() {
-            localStorage.removeItem('adminLoggedIn');
-            location.reload();
+        function saveGamesToStorage() {
+            try {
+                localStorage.setItem('guild_games_catalog_v3', JSON.stringify(gamesCatalog));
+            } catch (e) {
+                console.error(e);
+            }
         }
 
-        function loadOrders() {
-            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-            displayOrders(orders);
-            updateStats(orders);
+        // ==========================================
+        // СЕКРЕТНЫЙ ВЫЗОВ И ПРОВЕРКА ХЕША ВЛАДЕЛЬЦА
+        // ==========================================
+        function initSecretTriggers() {
+            // Секретная комбинация клавиш: Shift + Alt + G (или русской П)
+            window.addEventListener('keydown', (e) => {
+                if (e.shiftKey && e.altKey && (e.code === 'KeyG' || e.key === 'G' || e.key === 'g' || e.key === 'П' || e.key === 'п')) {
+                    e.preventDefault();
+                    openAdminModal();
+                }
+            });
+
+            // Альтернативный способ с телефона: 5 быстрых нажатий на логотип «ГИЛЬДИЯ ИГР»
+            const logoTrigger = document.getElementById('brand-logo-trigger');
+            if (logoTrigger) {
+                logoTrigger.addEventListener('click', () => {
+                    logoClickCount++;
+                    clearTimeout(logoClickTimer);
+                    if (logoClickCount >= 5) {
+                        logoClickCount = 0;
+                        openAdminModal();
+                    } else {
+                        logoClickTimer = setTimeout(() => {
+                            logoClickCount = 0;
+                        }, 1800);
+                    }
+                });
+            }
         }
 
-        function displayOrders(orders) {
-            const container = document.getElementById('ordersContainer');
-            
-            if (orders.length === 0) {
-                container.innerHTML = `
-                    <div class="glass-card p-12 text-center">
-                        <div class="text-6xl mb-4">📭</div>
-                        <h3 class="text-lg font-bold text-white mb-2">Пока нет заявок</h3>
-                        <p class="text-gray-400">Заявки появятся здесь после отправки формы на сайте</p>
+        // Вычисление необратимого хеша для проверки пароля без хранения его в коде
+        function computeAccessHash(str) {
+            let h1 = 0xdeadbeef ^ str.length;
+            let h2 = 0x41c6ce57 ^ str.length;
+            for (let i = 0, ch; i < str.length; i++) {
+                ch = str.charCodeAt(i);
+                h1 = Math.imul(h1 ^ ch, 2654435761);
+                h2 = Math.imul(h2 ^ ch, 1597334677);
+            }
+            h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+            h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+            return (h2 >>> 0).toString(16).padStart(8, '0') + (h1 >>> 0).toString(16).padStart(8, '0');
+        }
+
+        function verifyAdminSecret() {
+            const input = document.getElementById('admin-secret-input').value.trim();
+            const expectedDigest = '748604be01831484';
+
+            if (computeAccessHash(input) === expectedDigest) {
+                isAdminLoggedIn = true;
+                document.getElementById('admin-secret-input').value = '';
+                document.getElementById('admin-login-view').classList.add('hidden');
+                document.getElementById('admin-dashboard-view').classList.remove('hidden');
+
+                document.getElementById('owner-status-indicator').classList.remove('hidden');
+                document.getElementById('owner-status-indicator').classList.add('flex');
+                document.getElementById('owner-add-btn-wrap').classList.remove('hidden');
+
+                renderGames();
+                showToast('Доступ владельца подтверждён.', 'success');
+            } else {
+                showToast('Неверный ключ доступа.', 'error');
+            }
+        }
+
+        // ==========================================
+        // РЕНДЕР КАТАЛОГА ИГР
+        // ==========================================
+        function filterGames(category) {
+            currentCategory = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.cat === category) {
+                    btn.className = 'filter-btn px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-amber-500 text-slate-950 transition-all';
+                } else {
+                    btn.className = 'filter-btn px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all';
+                }
+            });
+            renderGames();
+        }
+
+        function renderGames() {
+            const grid = document.getElementById('games-grid');
+            const searchQuery = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+
+            const filtered = gamesCatalog.filter(g => {
+                const matchesCat = currentCategory === 'all' || g.category === currentCategory;
+                const matchesSearch = g.title.toLowerCase().includes(searchQuery) || g.desc.toLowerCase().includes(searchQuery);
+                return matchesCat && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 surface-card rounded-xl border border-slate-800">
+                        <h3 class="text-base font-bold text-white">По вашему запросу ничего не найдено</h3>
+                        <p class="text-xs text-slate-400 mt-1">Попробуйте сбросить фильтр или напишите нам в Telegram (@Kotenoknikita).</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = orders.map((order, index) => `
-                <div class="order-card">
-                    <div class="order-header">
-                        <div>
-                            <h3 class="font-bold text-white text-lg">${order.name || 'Аноним'}</h3>
-                            <p class="text-sm text-gray-400">${new Date(order.date).toLocaleString('ru-RU')}</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <select onchange="changeStatus(${index}, this.value)" 
-                                class="${getStatusClass(order.status)}">
-                                <option value="new" ${order.status === 'new' ? 'selected' : ''}>Новая</option>
-                                <option value="in-progress" ${order.status === 'in-progress' ? 'selected' : ''}>В работе</option>
-                                <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Завершена</option>
-                            </select>
-                            <button onclick="deleteOrder(${index})" class="btn-secondary text-red-400 hover:text-red-300">
-                                🗑️
-                            </button>
-                        </div>
-                    </div>
-                    <div class="order-detail">
-                        <div class="order-detail-item">
-                            <div class="order-detail-label">📞 Телефон</div>
-                            <div class="order-detail-value">${order.phone || 'Не указан'}</div>
-                        </div>
-                        <div class="order-detail-item">
-                            <div class="order-detail-label">📧 Email</div>
-                            <div class="order-detail-value">${order.email || 'Не указан'}</div>
-                        </div>
-                        <div class="order-detail-item">
-                            <div class="order-detail-label">🌐 Тип сайта</div>
-                            <div class="order-detail-value">${order.site_type || 'Не указан'}</div>
-                        </div>
-                        <div class="order-detail-item">
-                            <div class="order-detail-label"> Бюджет</div>
-                            <div class="order-detail-value">${order.budget || 'Не указан'}</div>
-                        </div>
-                    </div>
-                    ${order.message ? `
-                        <div class="mt-4 pt-4 border-t border-white/5">
-                            <div class="order-detail-label">📝 Сообщение</div>
-                            <div class="order-detail-value" style="margin-top: 8px;">${order.message}</div>
-                        </div>
+            grid.innerHTML = filtered.map(game => `
+                <div class="surface-card rounded-xl p-6 flex flex-col justify-between transition-all duration-200 relative">
+                    ${isAdminLoggedIn ? `
+                        <button onclick="deleteGameByOwner('${game.id}')" title="Удалить игру из каталога" class="absolute top-4 right-4 z-20 px-2.5 py-1 rounded bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white text-xs font-semibold transition-all">
+                            Удалить
+                        </button>
                     ` : ''}
+
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-4">
+                            <span class="px-2.5 py-1 rounded bg-slate-800 text-amber-400 text-[11px] font-bold uppercase tracking-wider border border-slate-700">
+                                ${game.category}
+                            </span>
+                            ${game.badge && !isAdminLoggedIn ? `<span class="px-2.5 py-1 rounded bg-amber-500/10 text-amber-300 text-[11px] font-semibold">${game.badge}</span>` : ''}
+                        </div>
+
+                        <h3 class="text-xl font-bold text-white mb-2">${game.title}</h3>
+
+                        <div class="flex flex-wrap items-center gap-4 text-xs text-slate-400 mb-4 pb-3 border-b border-slate-800/80">
+                            <span>Игроков: <strong class="text-slate-200">${game.players}</strong></span>
+                            <span>Партия: <strong class="text-slate-200">${game.time}</strong></span>
+                            <span>Сложность: <strong class="text-slate-200">${game.complexity}</strong></span>
+                        </div>
+
+                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                            ${game.desc}
+                        </p>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-800/90 space-y-4">
+                        <div class="flex items-center justify-between text-xs bg-slate-900/90 px-3.5 py-2 rounded-lg border border-slate-800">
+                            <span class="text-slate-400">Возвратный залог: <strong class="text-emerald-400">${game.deposit} ₽</strong></span>
+                            <span class="text-slate-500">С Ведущим: 0 ₽</span>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-2">
+                            <div>
+                                <span class="text-[11px] text-slate-400 uppercase tracking-wider block">Тариф за 12 часов</span>
+                                <span class="text-xl font-extrabold text-white">${game.price12h} ₽ <span class="text-xs font-normal text-slate-400">/ 12 ч</span></span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="addGameWithFriend('${game.id}')" title="Арендовать игру + пригласить Друга для настолок (+100 ₽ на 3 часа+)" class="px-3 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 font-semibold text-xs transition-all">
+                                    + Друг (+100 ₽)
+                                </button>
+                                <button onclick="addGameToCart('${game.id}')" class="px-3.5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all">
+                                    Арендовать (12 ч)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `).join('');
         }
 
-        function getStatusClass(status) {
-            const classes = {
-                'new': 'status-badge status-new',
-                'in-progress': 'status-badge status-in-progress',
-                'completed': 'status-badge status-completed'
+        // ==========================================
+        // ЛОГИКА КОРЗИНЫ, ЗАЛОГА И УМНЫХ ПОДСКАЗОК
+        // ==========================================
+        function addGameToCart(gameId) {
+            const game = gamesCatalog.find(g => g.id === gameId);
+            if (!game) return;
+
+            if (cart.some(item => item.id === game.id)) {
+                showToast(`Игра «${game.title}» уже находится в вашем заказе.`, 'info');
+                openCartModal();
+                return;
+            }
+
+            cart.push({
+                id: game.id,
+                type: 'game',
+                isMaster: false,
+                title: game.title,
+                price: Number(game.price12h),
+                deposit: Number(game.deposit)
+            });
+
+            updateCartBadge();
+            showToast(`Игра «${game.title}» добавлена в заказ (тариф за 12 часов).`, 'success');
+        }
+
+        function addGameWithFriend(gameId) {
+            const game = gamesCatalog.find(g => g.id === gameId);
+            if (!game) return;
+
+            if (!cart.some(item => item.id === game.id)) {
+                cart.push({
+                    id: game.id,
+                    type: 'game',
+                    isMaster: false,
+                    title: game.title,
+                    price: Number(game.price12h),
+                    deposit: Number(game.deposit)
+                });
+            }
+
+            const friendSrv = GUILD_SERVICES.find(s => s.id === 'srv-boardgame-friend');
+            if (friendSrv && !cart.some(item => item.id === friendSrv.id)) {
+                cart.push({
+                    id: friendSrv.id,
+                    type: 'service',
+                    isMaster: false,
+                    title: friendSrv.title,
+                    price: Number(friendSrv.price),
+                    deposit: 0
+                });
+            }
+
+            updateCartBadge();
+            showToast(`Добавлена игра «${game.title}» + «Друг для настолок» (+100 ₽ на 3 ч+, залог за игру сохраняется).`, 'success');
+            openCartModal();
+        }
+
+        function addServiceToCart(serviceId) {
+            const srv = GUILD_SERVICES.find(s => s.id === serviceId);
+            if (!srv) return;
+
+            if (cart.some(item => item.id === srv.id)) {
+                showToast(`Услуга «${srv.title}» уже в заказе.`, 'info');
+                openCartModal();
+                return;
+            }
+
+            cart.push({
+                id: srv.id,
+                type: 'service',
+                isMaster: Boolean(srv.isMaster),
+                title: srv.title,
+                price: Number(srv.price),
+                deposit: 0
+            });
+
+            updateCartBadge();
+            showToast(`Услуга добавлена: ${srv.title}`, 'success');
+            openCartModal();
+        }
+
+        function addPrintOrderToCart() {
+            const printId = 'custom-3d-print';
+            if (cart.some(item => item.id === printId)) {
+                openCartModal();
+                return;
+            }
+
+            cart.push({
+                id: printId,
+                type: 'print',
+                isMaster: false,
+                title: 'Запрос на 3D-печать (обсуждение заказа)',
+                price: 0,
+                deposit: 0
+            });
+
+            updateCartBadge();
+            showToast('Запрос на покупку 3D-печати добавлен в заказ.', 'success');
+            openCartModal();
+        }
+
+        function removeFromCart(itemId) {
+            cart = cart.filter(i => i.id !== itemId);
+            updateCartBadge();
+            updateCartUI();
+        }
+
+        function changeSlots(delta) {
+            slots12h = Math.max(1, Math.min(20, slots12h + delta));
+            updateCartUI();
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cart-badge');
+            if (badge) badge.textContent = cart.length;
+        }
+
+        function getSelectedDeliveryMode() {
+            const checked = document.querySelector('input[name="delivery_option"]:checked');
+            return checked ? checked.value : 'pickup';
+        }
+
+        function calculateCartTotals() {
+            // Залог отменяется ТОЛЬКО при заказе полноценного Ведущего (isMaster === true).
+            // При заказе "Друг для настолок" залог за саму игру СОХРАНЯЕТСЯ.
+            const hasFullGameMaster = cart.some(i => i.type === 'service' && i.isMaster === true);
+            const hasFriendService = cart.some(i => i.id === 'srv-boardgame-friend');
+            const deliveryMode = getSelectedDeliveryMode();
+
+            let rawGameRentalSum = 0;
+            let servicesSum = 0;
+            let depositSum = 0;
+
+            cart.forEach(item => {
+                if (item.type === 'game') {
+                    rawGameRentalSum += item.price * slots12h;
+                    depositSum += item.deposit;
+                } else if (item.type === 'service') {
+                    servicesSum += item.price;
+                }
+            });
+
+            // Скидка 15% при аренде от 3 слотов (36 часов и более)
+            const hasDiscount = slots12h >= 3 && rawGameRentalSum > 0;
+            const gameRentalSum = hasDiscount ? Math.round(rawGameRentalSum * 0.85) : rawGameRentalSum;
+
+            if (hasFullGameMaster) {
+                depositSum = 0;
+            }
+
+            const deliveryCost = (cart.length > 0 && deliveryMode === 'personal_delivery') ? 200 : 0;
+
+            return {
+                totalHours: slots12h * 12,
+                rawGameRentalSum,
+                gameRentalSum,
+                hasDiscount,
+                servicesSum,
+                deliveryCost,
+                depositSum,
+                hasFullGameMaster,
+                hasFriendService,
+                grandTotal: gameRentalSum + servicesSum + deliveryCost + depositSum
             };
-            return classes[status] || 'status-badge status-new';
         }
 
-        function updateStats(orders) {
-            const total = orders.length;
-            const newCount = orders.filter(o => o.status === 'new').length;
-            const inProgressCount = orders.filter(o => o.status === 'in-progress').length;
-            const completedCount = orders.filter(o => o.status === 'completed').length;
+        // Динамическое обновление заголовка и подсказки поля комментария/адреса
+        function updateDynamicCommentPrompts() {
+            const labelEl = document.getElementById('dynamic-comment-label');
+            const helperEl = document.getElementById('dynamic-comment-helper');
+            const textareaEl = document.getElementById('client-comment');
+            if (!labelEl || !helperEl || !textareaEl) return;
 
-            document.getElementById('totalOrders').textContent = total;
-            document.getElementById('newOrders').textContent = newCount;
-            document.getElementById('inProgressOrders').textContent = inProgressCount;
-            document.getElementById('completedOrders').textContent = completedCount;
-        }
+            const hasFullGameMaster = cart.some(i => i.type === 'service' && i.isMaster === true);
+            const hasPrint = cart.some(i => i.type === 'print');
+            const deliveryMode = getSelectedDeliveryMode();
+            const isDelivery = deliveryMode === 'personal_delivery';
 
-        function changeStatus(index, newStatus) {
-            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-            if (orders[index]) {
-                orders[index].status = newStatus;
-                localStorage.setItem('orders', JSON.stringify(orders));
-                loadOrders();
+            if (hasFullGameMaster && isDelivery) {
+                labelEl.textContent = 'Адрес проведения игры и пожелания по угощениям *';
+                helperEl.textContent = 'Выбран Ведущий + выезд по вашему адресу';
+                textareaEl.placeholder = 'Укажите точный адрес, куда приехать ведущему, и напишите ваши пожелания по угощениям и напиткам (а также есть ли аллергии)...';
+            } else if (hasFullGameMaster && !isDelivery) {
+                labelEl.textContent = 'Пожелания по угощениям и комментарий к игре *';
+                helperEl.textContent = 'В стоимость Ведущего включены угощения';
+                textareaEl.placeholder = 'Напишите, какие угощения и напитки вы предпочитаете для партии (и есть ли аллергии), а также пожелания по сценарию...';
+            } else if (!hasFullGameMaster && isDelivery) {
+                labelEl.textContent = 'Адрес для нашей доставки (200 ₽) и комментарий *';
+                helperEl.textContent = 'Адрес указывается, так как выбрана доставка от нас';
+                textareaEl.placeholder = 'Так как выбрана доставка от нас, укажите ваш адрес (улица, дом, подъезд, квартира) и удобное время получения игры...';
+            } else {
+                labelEl.textContent = 'Комментарий к заказу (адрес писать не нужно — выбран самовывоз)';
+                helperEl.textContent = 'Адрес пишется только в случае доставки от нас';
+                textareaEl.placeholder = 'Адрес указывать не требуется (выбран самовывоз; адрес пишется только в случае доставки от нас). Здесь можно оставить комментарий или удобное время встречи...';
+            }
+
+            if (hasPrint) {
+                textareaEl.placeholder += ' Также опишите здесь, какую модель или аксессуар нужно напечатать на 3D-принтере.';
             }
         }
 
-        function deleteOrder(index) {
-            if (confirm('Удалить эту заявку?')) {
-                const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-                orders.splice(index, 1);
-                localStorage.setItem('orders', JSON.stringify(orders));
-                loadOrders();
+        function updateCartUI() {
+            const container = document.getElementById('cart-items-container');
+            const totalHours = slots12h * 12;
+            const slotsDisplay = document.getElementById('slots-display');
+            if (slotsDisplay) {
+                slotsDisplay.textContent = `${totalHours} ч (${slots12h} × 12ч)${slots12h >= 3 ? ' -15%' : ''}`;
+            }
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 bg-slate-900/50 rounded-xl border border-slate-800">
+                        <p class="text-slate-300 font-semibold text-sm">Ваш список заказа пуст</p>
+                        <p class="text-xs text-slate-500 mt-1">Выберите настольную игру, услугу Ведущего, «Друга для настолок» или 3D-печать</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = cart.map(item => `
+                    <div class="flex items-center justify-between gap-3 p-3.5 rounded-lg bg-slate-900 border border-slate-800">
+                        <div>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-400">
+                                ${item.type === 'service' ? (item.isMaster ? 'Услуга Ведущего (с угощениями)' : 'Услуга Друг для настолок (3 часа+)') : item.type === 'print' ? 'Покупка 3D-печати' : 'Аренда настольной игры'}
+                            </span>
+                            <h4 class="text-sm font-bold text-white mt-0.5">${item.title}</h4>
+                            <span class="text-xs text-slate-400">
+                                ${item.type === 'game' 
+                                    ? `${item.price} ₽ за 12 ч • Залог: ${item.deposit} ₽` 
+                                    : item.type === 'print' 
+                                    ? 'Стоимость покупки обсуждается индивидуально в Telegram / MAX / Gmail' 
+                                    : item.isMaster
+                                    ? `${item.price} ₽ (залог за игры: 0 ₽)`
+                                    : `+${item.price} ₽ к аренде (залог за игру сохраняется)`}
+                            </span>
+                        </div>
+                        <button onclick="removeFromCart('${item.id}')" class="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 text-xs font-semibold shrink-0">
+                            Убрать
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            const totals = calculateCartTotals();
+            document.getElementById('sum-rental').textContent = totals.hasDiscount 
+                ? `${totals.gameRentalSum} ₽ (${totals.totalHours} ч, скидка 15%)` 
+                : `${totals.gameRentalSum} ₽ (${totals.totalHours} ч)`;
+            document.getElementById('sum-services').textContent = `${totals.servicesSum} ₽`;
+            document.getElementById('sum-delivery').textContent = totals.deliveryCost > 0 ? '200 ₽ (личная доставка от нас)' : '0 ₽ (самовывоз)';
+
+            const depositLabel = document.getElementById('sum-deposit-label');
+            if (totals.hasFullGameMaster) {
+                depositLabel.textContent = 'Возвратный залог (отменён при заказе Ведущего):';
+                document.getElementById('sum-deposit').textContent = '0 ₽ (присутствует Ведущий)';
+            } else if (totals.hasFriendService) {
+                depositLabel.textContent = 'Возвратный залог за игру (при услуге «Друг» сохраняется):';
+                document.getElementById('sum-deposit').textContent = `${totals.depositSum} ₽`;
+            } else {
+                depositLabel.textContent = 'Возвратный залог (возвращается после сдачи игры):';
+                document.getElementById('sum-deposit').textContent = `${totals.depositSum} ₽`;
+            }
+
+            document.getElementById('sum-total').textContent = `${totals.grandTotal} ₽`;
+            updateDynamicCommentPrompts();
+        }
+
+        // ==========================================
+        // ОТПРАВКА ЗАЯВКИ (TELEGRAM / MAX 89153202259 / GMAIL)
+        // ==========================================
+        function submitOrder(targetChannel) {
+            if (cart.length === 0) {
+                showToast('Добавьте в заказ игру, услугу Ведущего или запрос на 3D-печать.', 'error');
+                return;
+            }
+
+            const name = document.getElementById('client-name').value.trim();
+            const contact = document.getElementById('client-contact').value.trim();
+            const dateVal = document.getElementById('client-date').value;
+            const deliveryMode = getSelectedDeliveryMode();
+            const comment = document.getElementById('client-comment').value.trim();
+            const agreed = document.getElementById('legal-agree-checkbox').checked;
+
+            if (!name || !contact) {
+                showToast('Пожалуйста, укажите ваше имя и телефон для связи.', 'error');
+                return;
+            }
+
+            if (deliveryMode === 'personal_delivery' && !comment) {
+                showToast('Вы выбрали доставку от нас (200 ₽) — пожалуйста, напишите ваш адрес в поле комментария.', 'error');
+                document.getElementById('client-comment').focus();
+                return;
+            }
+
+            if (!agreed) {
+                showToast('Отметьте галочкой согласие с Договором публичной оферты и условиями залога.', 'error');
+                return;
+            }
+
+            const totals = calculateCartTotals();
+            const formattedDate = dateVal ? new Date(dateVal).toLocaleString('ru-RU', { dateStyle: 'short', timeStyle: 'short' }) : 'По согласованию';
+            const deliveryText = deliveryMode === 'personal_delivery' ? 'Личная доставка от нас (+200 ₽)' : 'Самовывоз (0 ₽)';
+
+            const itemsLines = cart.map((item, idx) => {
+                if (item.type === 'game') {
+                    return `${idx + 1}. [Аренда игры] ${item.title} — ${item.price} ₽ × ${slots12h} (${totals.totalHours} ч), залог ${item.deposit} ₽`;
+                } else if (item.type === 'print') {
+                    return `${idx + 1}. [Покупка 3D-печати] Запрос на 3D-печать (обсуждение модели и цены)`;
+                } else if (item.id === 'srv-boardgame-friend') {
+                    return `${idx + 1}. [Услуга] ${item.title} — +${item.price} ₽ (базово 3 часа, залог за игру сохраняется)`;
+                }
+                return `${idx + 1}. [Ведущий] ${item.title} — ${item.price} ₽ (с угощениями, залог 0 ₽)`;
+            }).join('\n');
+
+            const orderSummary = 
+`ЗАЯВКА — «ГИЛЬДИЯ ИГР»
+----------------------------------------
+Клиент: ${name}
+Телефон для связи: ${contact}
+Дата и время: ${formattedDate}
+Срок аренды игр: ${totals.totalHours} часов (${slots12h} × 12 ч)${totals.hasDiscount ? ' [Скидка 15%]' : ''}
+Способ получения: ${deliveryText}
+${comment ? `Детали (адрес / угощения / комментарий): ${comment}\n` : ''}----------------------------------------
+Состав заказа:
+${itemsLines}
+----------------------------------------
+Аренда игр: ${totals.gameRentalSum} ₽
+Услуги Ведущего / Друг для настолок: ${totals.servicesSum} ₽
+Доставка: ${totals.deliveryCost} ₽
+Возвратный залог: ${totals.depositSum} ₽ ${totals.hasFullGameMaster ? '(отменён — заказ с Ведущим)' : totals.hasFriendService ? '(сохраняется при услуге Друг для настолок)' : ''}
+ИТОГО К ОПЛАТЕ: ${totals.grandTotal} ₽
+С договором публичной оферты и правилами залога согласен(а).`;
+
+            copyTextToClipboard(orderSummary);
+            sendOptionalBotNotification(orderSummary);
+
+            if (targetChannel === 'telegram') {
+                const tgUser = (ownerSettings.tgUsername || 'Kotenoknikita').replace('@', '');
+                const tgUrl = `https://t.me/${tgUser}?text=${encodeURIComponent(orderSummary)}`;
+                showToast('Заказ скопирован и открыт в Telegram @' + tgUser, 'success');
+                window.open(tgUrl, '_blank');
+            } else if (targetChannel === 'max') {
+                const maxNum = ownerSettings.maxPhone || '89153202259';
+                document.getElementById('max-phone-display').textContent = maxNum;
+                openMaxSendModal();
+            } else if (targetChannel === 'gmail') {
+                const emailTo = ownerSettings.email || 'kotenoknikita@gmail.com';
+                const subject = encodeURIComponent(`Заказ в Гильдии Игр от ${name}`);
+                const body = encodeURIComponent(orderSummary);
+                showToast('Заказ скопирован. Открываем почту Gmail...', 'success');
+                window.location.href = `mailto:${emailTo}?subject=${subject}&body=${body}`;
             }
         }
 
-        function exportOrders() {
-            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-            const csv = convertToCSV(orders);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `orders_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
+        function sendOptionalBotNotification(text) {
+            if (ownerSettings.botToken && ownerSettings.chatId) {
+                fetch(`https://api.telegram.org/bot${ownerSettings.botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: ownerSettings.chatId,
+                        text: text
+                    })
+                }).catch(() => {});
+            }
         }
 
-        function convertToCSV(orders) {
-            const headers = ['Дата', 'Имя', 'Телефон', 'Email', 'Тип сайта', 'Бюджет', 'Сообщение', 'Статус'];
-            const rows = orders.map(order => [
-                order.date,
-                order.name,
-                order.phone,
-                order.email,
-                order.site_type,
-                order.budget,
-                order.message,
-                order.status
-            ]);
-            
-            return [headers, ...rows]
-                .map(row => row.map(cell => `"${cell || ''}"`).join(','))
-                .join('\n');
+        function openMaxSendModal() {
+            const modal = document.getElementById('max-send-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'orders' && localStorage.getItem('adminLoggedIn') === 'true') {
-                loadOrders();
-            }
-        });
+        function closeMaxSendModal() {
+            const modal = document.getElementById('max-send-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
 
-        setInterval(() => {
-            if (localStorage.getItem('adminLoggedIn') === 'true') {
-                loadOrders();
+        function copyMaxNumber() {
+            const num = ownerSettings.maxPhone || '89153202259';
+            copyTextToClipboard(num);
+            showToast(`Номер MAX (${num}) скопирован в буфер обмена.`, 'success');
+        }
+
+        // ==========================================
+        // ЛОГИКА КОРЗИНЫ И РАСЧЁТА (12 ЧАСОВ + ДОСТАВКА 200 ₽)
+        // ==========================================
+        function addGameToCart(gameId) {
+            const game = gamesCatalog.find(g => g.id === gameId);
+            if (!game) return;
+
+            if (cart.some(item => item.id === game.id)) {
+                showToast(`Игра «${game.title}» уже находится в вашем заказе.`, 'info');
+                openCartModal();
+                return;
             }
-        }, 30000);
+
+            cart.push({
+                id: game.id,
+                type: 'game',
+                title: game.title,
+                price: Number(game.price12h),
+                deposit: Number(game.deposit)
+            });
+
+            updateCartBadge();
+            showToast(`Игра «${game.title}» добавлена в заказ (тариф за 12 часов).`, 'success');
+        }
+
+        function addGameWithFriend(gameId) {
+            const game = gamesCatalog.find(g => g.id === gameId);
+            if (!game) return;
+
+            if (!cart.some(item => item.id === game.id)) {
+                cart.push({
+                    id: game.id,
+                    type: 'game',
+                    title: game.title,
+                    price: Number(game.price12h),
+                    deposit: Number(game.deposit)
+                });
+            }
+
+            const friendSrv = GUILD_SERVICES.find(s => s.id === 'srv-boardgame-friend');
+            if (friendSrv && !cart.some(item => item.id === friendSrv.id)) {
+                cart.push({
+                    id: friendSrv.id,
+                    type: 'service',
+                    title: friendSrv.title,
+                    price: Number(friendSrv.price),
+                    deposit: 0
+                });
+            }
+
+            updateCartBadge();
+            showToast(`Добавлена игра «${game.title}» + услуга «Друг для настолок» (+100 ₽, без залога).`, 'success');
+            openCartModal();
+        }
+
+        function addServiceToCart(serviceId) {
+            const srv = GUILD_SERVICES.find(s => s.id === serviceId);
+            if (!srv) return;
+
+            if (cart.some(item => item.id === srv.id)) {
+                showToast(`Услуга «${srv.title}» уже в заказе.`, 'info');
+                openCartModal();
+                return;
+            }
+
+            cart.push({
+                id: srv.id,
+                type: 'service',
+                title: srv.title,
+                price: Number(srv.price),
+                deposit: 0
+            });
+
+            updateCartBadge();
+            showToast(`Услуга добавлена: ${srv.title}`, 'success');
+            openCartModal();
+        }
+
+        function addPrintOrderToCart() {
+            const printId = 'custom-3d-print';
+            if (cart.some(item => item.id === printId)) {
+                openCartModal();
+                return;
+            }
+
+            cart.push({
+                id: printId,
+                type: 'print',
+                title: 'Покупка 3D-печати на заказ (индивидуальный расчёт в Telegram/MAX)',
+                price: 0,
+                deposit: 0
+            });
+
+            updateCartBadge();
+            showToast('Запрос на индивидуальную 3D-печать добавлен к заказу. Укажите детали в комментарии.', 'success');
+            openCartModal();
+        }
+
+        function removeFromCart(itemId) {
+            cart = cart.filter(i => i.id !== itemId);
+            updateCartBadge();
+            updateCartUI();
+        }
+
+        function changeSlots(delta) {
+            slots12h = Math.max(1, Math.min(20, slots12h + delta));
+            updateCartUI();
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cart-badge');
+            if (badge) badge.textContent = cart.length;
+        }
+
+        function calculateCartTotals() {
+            const hasCompanionOrMaster = cart.some(i => i.type === 'service');
+            const deliveryMode = document.getElementById('client-delivery')?.value || 'pickup';
+
+            let gameRentalSum = 0;
+            let servicesSum = 0;
+            let depositSum = 0;
+
+            cart.forEach(item => {
+                if (item.type === 'game') {
+                    gameRentalSum += item.price * slots12h;
+                    depositSum += item.deposit;
+                } else if (item.type === 'service') {
+                    servicesSum += item.price;
+                }
+            });
+
+            // Если заказан Ведущий или Друг для настолок, залог = 0 ₽
+            if (hasCompanionOrMaster) {
+                depositSum = 0;
+            }
+
+            const deliveryCost = (cart.length > 0 && deliveryMode === 'personal_delivery') ? 200 : 0;
+
+            return {
+                totalHours: slots12h * 12,
+                gameRentalSum,
+                servicesSum,
+                deliveryCost,
+                depositSum,
+                hasCompanionOrMaster,
+                grandTotal: gameRentalSum + servicesSum + deliveryCost + depositSum
+            };
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items-container');
+            const totalHours = slots12h * 12;
+            const slotsDisplay = document.getElementById('slots-display');
+            if (slotsDisplay) {
+                slotsDisplay.textContent = `${totalHours} ч (${slots12h} × 12ч)`;
+            }
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 bg-slate-900/50 rounded-xl border border-slate-800">
+                        <p class="text-slate-300 font-semibold text-sm">Ваш список заказа пуст</p>
+                        <p class="text-xs text-slate-500 mt-1">Выберите настольную игру, услугу Ведущего, «Друга для настолок» или 3D-печать</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = cart.map(item => `
+                    <div class="flex items-center justify-between gap-3 p-3.5 rounded-lg bg-slate-900 border border-slate-800">
+                        <div>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-400">
+                                ${item.type === 'service' ? 'Услуга сопровождения' : item.type === 'print' ? 'Покупка 3D-печати' : 'Аренда настольной игры'}
+                            </span>
+                            <h4 class="text-sm font-bold text-white mt-0.5">${item.title}</h4>
+                            <span class="text-xs text-slate-400">
+                                ${item.type === 'game' 
+                                    ? `${item.price} ₽ за 12 ч • Залог: ${item.deposit} ₽` 
+                                    : item.type === 'print' 
+                                    ? 'Стоимость рассчитывается индивидуально в Telegram / MAX' 
+                                    : `${item.price} ₽`}
+                            </span>
+                        </div>
+                        <button onclick="removeFromCart('${item.id}')" class="px-2.5 py-1.5 rounded bg-slate-800 hover:bg-red-500/20 text-slate-400 hover:text-red-400 text-xs font-semibold shrink-0">
+                            Убрать
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            const totals = calculateCartTotals();
+            document.getElementById('sum-rental').textContent = `${totals.gameRentalSum} ₽ (${totals.totalHours} ч)`;
+            document.getElementById('sum-services').textContent = `${totals.servicesSum} ₽`;
+            document.getElementById('sum-delivery').textContent = totals.deliveryCost > 0 ? '200 ₽ (наша доставка)' : '0 ₽ (самовывоз)';
+            document.getElementById('sum-deposit').textContent = totals.hasCompanionOrMaster 
+                ? '0 ₽ (присутствует Ведущий / Друг)' 
+                : `${totals.depositSum} ₽`;
+            document.getElementById('sum-total').textContent = `${totals.grandTotal} ₽`;
+        }
+
+        // ==========================================
+        // ОТПРАВКА ЗАЯВКИ (TELEGRAM / MAX / GMAIL)
+        // ==========================================
+        function submitOrder(targetChannel) {
+            if (cart.length === 0) {
+                showToast('Добавьте в заказ игру, услугу Ведущего или запрос на 3D-печать.', 'error');
+                return;
+            }
+
+            const name = document.getElementById('client-name').value.trim();
+            const preferredMessenger = document.getElementById('client-messenger').value;
+            const contact = document.getElementById('client-contact').value.trim();
+            const dateVal = document.getElementById('client-date').value;
+            const deliveryMode = document.getElementById('client-delivery').value;
+            const comment = document.getElementById('client-comment').value.trim();
+            const agreed = document.getElementById('legal-agree-checkbox').checked;
+
+            if (!name || !contact) {
+                showToast('Заполните ваше имя и контакт для связи.', 'error');
+                return;
+            }
+
+            if (!agreed) {
+                showToast('Для оформления заказа необходимо подтвердить согласие с Договором публичной оферты.', 'error');
+                return;
+            }
+
+            const totals = calculateCartTotals();
+            const formattedDate = dateVal ? new Date(dateVal).toLocaleString('ru-RU', { dateStyle: 'short', timeStyle: 'short' }) : 'По согласованию';
+            const deliveryText = deliveryMode === 'personal_delivery' ? 'Личная доставка по адресу (+200 ₽)' : 'Самовывоз (0 ₽)';
+
+            const itemsLines = cart.map((item, idx) => {
+                if (item.type === 'game') {
+                    return `${idx + 1}. [Игра] ${item.title} — ${item.price} ₽ × ${slots12h} (${totals.totalHours} ч), залог ${item.deposit} ₽`;
+                } else if (item.type === 'print') {
+                    return `${idx + 1}. [Покупка 3D-печати] Индивидуальный заказ (обсуждение модели и цены)`;
+                }
+                return `${idx + 1}. [Услуга] ${item.title} — ${item.price} ₽`;
+            }).join('\n');
+
+            const orderSummary = 
+`ЗАЯВКА — «ГИЛЬДИЯ ИГР»
+----------------------------------------
+Клиент: ${name}
+Предпочтительная связь: ${preferredMessenger} (${contact})
+Дата и время: ${formattedDate}
+Длительность аренды игр: ${totals.totalHours} часов (${slots12h} × 12 ч)
+Способ получения: ${deliveryText}
+${comment ? `Пожелания (адрес / угощения / 3D-печать): ${comment}\n` : ''}----------------------------------------
+Выбранные позиции:
+${itemsLines}
+----------------------------------------
+Аренда игр: ${totals.gameRentalSum} ₽
+Ведущий / Друг для настолок: ${totals.servicesSum} ₽
+Доставка: ${totals.deliveryCost} ₽
+Возвратный залог: ${totals.depositSum} ₽
+ИТОГО К ОПЛАТЕ: ${totals.grandTotal} ₽
+С договором публичной оферты и условиями залога согласен(а).`;
+
+            copyTextToClipboard(orderSummary);
+
+            if (targetChannel === 'telegram') {
+                const tgUser = (ownerSettings.tgUsername || 'Kotenoknikita').replace('@', '');
+                const tgUrl = `https://t.me/${tgUser}?text=${encodeURIComponent(orderSummary)}`;
+                showToast('Заказ скопирован и подготовлен для отправки в Telegram @' + tgUser, 'success');
+                window.open(tgUrl, '_blank');
+            } else if (targetChannel === 'max') {
+                showToast('Текст заказа полностью скопирован в буфер обмена. Отправьте его нам в мессенджере MAX или Telegram @Kotenoknikita.', 'success');
+            } else if (targetChannel === 'gmail') {
+                const emailTo = ownerSettings.email || 'kotenoknikita@gmail.com';
+                const subject = encodeURIComponent(`Заказ в Гильдии Игр от ${name}`);
+                const body = encodeURIComponent(orderSummary);
+                showToast('Открываем почтовый клиент для отправки на Gmail...', 'success');
+                window.location.href = `mailto:${emailTo}?subject=${subject}&body=${body}`;
+            }
+        }
+
+        // ==========================================
+        // УПРАВЛЕНИЕ КАТАЛОГОМ ДЛЯ ВЛАДЕЛЬЦА
+        // ==========================================
+        function openAdminModal() {
+            const modal = document.getElementById('admin-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            if (isAdminLoggedIn) {
+                document.getElementById('admin-login-view').classList.add('hidden');
+                document.getElementById('admin-dashboard-view').classList.remove('hidden');
+            } else {
+                document.getElementById('admin-login-view').classList.remove('hidden');
+                document.getElementById('admin-dashboard-view').classList.add('hidden');
+                setTimeout(() => document.getElementById('admin-secret-input')?.focus(), 100);
+            }
+        }
+
+        function closeAdminModal() {
+            const modal = document.getElementById('admin-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            document.getElementById('owner-status-indicator').classList.add('hidden');
+            document.getElementById('owner-status-indicator').classList.remove('flex');
+            document.getElementById('owner-add-btn-wrap').classList.add('hidden');
+            closeAdminModal();
+            renderGames();
+            showToast('Режим владельца закрыт.', 'info');
+        }
+
+        function addNewGameByOwner() {
+            if (!isAdminLoggedIn) return;
+
+            const title = document.getElementById('new-game-title').value.trim();
+            const category = document.getElementById('new-game-category').value;
+            const price12h = parseInt(document.getElementById('new-game-price').value, 10);
+            const deposit = parseInt(document.getElementById('new-game-deposit').value, 10);
+            const players = document.getElementById('new-game-players').value.trim() || '2–6 игроков';
+            const time = document.getElementById('new-game-time').value.trim() || '30–60 мин';
+            const complexity = document.getElementById('new-game-complexity').value;
+            const badge = document.getElementById('new-game-badge').value.trim();
+            const desc = document.getElementById('new-game-desc').value.trim();
+
+            if (!title || isNaN(price12h) || isNaN(deposit) || !desc) {
+                showToast('Укажите название, цену за 12 часов, залог и описание игры.', 'error');
+                return;
+            }
+
+            const newGame = {
+                id: 'game-' + Date.now(),
+                title,
+                category,
+                price12h,
+                deposit,
+                players,
+                time,
+                complexity,
+                badge,
+                desc
+            };
+
+            gamesCatalog.unshift(newGame);
+            saveGamesToStorage();
+            renderGames();
+
+            document.getElementById('new-game-title').value = '';
+            document.getElementById('new-game-price').value = '';
+            document.getElementById('new-game-deposit').value = '';
+            document.getElementById('new-game-badge').value = '';
+            document.getElementById('new-game-desc').value = '';
+
+            showToast(`Игра «${title}» опубликована в каталоге.`, 'success');
+            closeAdminModal();
+        }
+
+        function deleteGameByOwner(gameId) {
+            if (!isAdminLoggedIn) return;
+            gamesCatalog = gamesCatalog.filter(g => g.id !== gameId);
+            saveGamesToStorage();
+            renderGames();
+            showToast('Игра удалена из каталога.', 'info');
+        }
+
+        function resetCatalogToDefaults() {
+            if (!isAdminLoggedIn) return;
+            gamesCatalog = [...DEFAULT_GAMES];
+            saveGamesToStorage();
+            renderGames();
+            showToast('Каталог восстановлен к базовому списку игр.', 'success');
+        }
+
+        function saveOwnerSettings() {
+            if (!isAdminLoggedIn) return;
+            ownerSettings.tgUsername = document.getElementById('owner-tg-username').value.trim().replace('@', '') || 'Kotenoknikita';
+            ownerSettings.maxPhone = document.getElementById('owner-max-phone').value.trim() || '89153202259';
+            ownerSettings.email = document.getElementById('owner-email').value.trim() || 'kotenoknikita@gmail.com';
+            ownerSettings.botToken = document.getElementById('owner-bot-token').value.trim();
+            ownerSettings.chatId = document.getElementById('owner-chat-id').value.trim();
+            localStorage.setItem('guild_owner_settings_v3', JSON.stringify(ownerSettings));
+            showToast('Контактные настройки сохранены.', 'success');
+        }
+
+        // ==========================================
+        // МОДАЛЬНЫЕ ОКНА И ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // ==========================================
+        function openCartModal() {
+            updateCartUI();
+            const modal = document.getElementById('cart-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeCartModal() {
+            const modal = document.getElementById('cart-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openLegalModal() {
+            const modal = document.getElementById('legal-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeLegalModal() {
+            const modal = document.getElementById('legal-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function acceptLegalFromModal() {
+            const cb = document.getElementById('legal-agree-checkbox');
+            if (cb) cb.checked = true;
+            closeLegalModal();
+            showToast('Согласие с Договором публичной оферты отмечено.', 'success');
+        }
+
+        function copyLegalText() {
+            const text = document.getElementById('legal-document-text').innerText;
+            copyTextToClipboard(text);
+            showToast('Текст договора скопирован в буфер обмена.', 'success');
+        }
+
+        function openChecklistModal() {
+            const modal = document.getElementById('checklist-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeChecklistModal() {
+            const modal = document.getElementById('checklist-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function copyTextToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error(err);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            const styles = {
+                success: 'border-emerald-500/50 bg-slate-900/95 text-emerald-300',
+                error: 'border-red-500/50 bg-slate-900/95 text-red-300',
+                info: 'border-amber-500/50 bg-slate-900/95 text-amber-300'
+            };
+
+            toast.className = `pointer-events-auto flex items-center justify-between gap-3 px-4 py-3.5 rounded-xl border shadow-2xl backdrop-blur-md transition-all duration-300 ${styles[type] || styles.info}`;
+            toast.innerHTML = `<span class="text-xs sm:text-sm font-medium text-white leading-snug">${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
     </script>
 </body>
 </html>
